@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Databricks Certified Context Engineer Associate 対策ポータル</title>
+  <style>
+    :root {
+      --dbx-orange: #FF3621;
+      --dbx-orange-hover: #E02B18;
+      --dbx-navy: #1B2533;
+      --dbx-navy-light: #2B384E;
+      --dbx-slate: #0E1621;
+      --bg-main: #0F172A;
+      --bg-card: #1E293B;
+      --bg-card-hover: #293548;
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --border-color: #334155;
+      --accent-blue: #38BDF8;
+      --accent-green: #34D399;
+      --accent-yellow: #FBBF24;
+      --accent-purple: #A78BFA;
+      --danger: #F87171;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--dbx-slate) 0%, var(--dbx-navy) 100%);
+      border-bottom: 2px solid var(--dbx-orange);
+      padding: 1.25rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .header-container {
+      max-width: 1300px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .badge-icon {
+      background: var(--dbx-orange);
+      color: white;
+      font-weight: 900;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 0 15px rgba(255, 54, 33, 0.4);
+    }
+
+    .header-title h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .header-title p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    nav {
+      display: flex;
+      gap: 8px;
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-btn:hover {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border-color: var(--text-muted);
+    }
+
+    .nav-btn.active {
+      background: var(--dbx-orange);
+      color: white;
+      border-color: var(--dbx-orange);
+      box-shadow: 0 0 12px rgba(255, 54, 33, 0.3);
+    }
+
+    main {
+      flex: 1;
+      max-width: 1300px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Cards & Layout */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    }
+
+    .card h2 {
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.75rem;
+    }
+
+    .card h3 {
+      font-size: 1.1rem;
+      margin: 1.25rem 0 0.5rem 0;
+      color: var(--accent-blue);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    /* Dashboard Metrics */
+    .metric-box {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1.25rem;
+      text-align: center;
+    }
+
+    .metric-value {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--accent-blue);
+      margin-bottom: 4px;
+    }
+
+    .metric-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Failure Mode Cards */
+    .failure-card {
+      background: rgba(15, 23, 42, 0.6);
+      border-left: 4px solid;
+      border-radius: 0 8px 8px 0;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .failure-card.poisoning { border-color: #EF4444; }
+    .failure-card.distraction { border-color: #F59E0B; }
+    .failure-card.confusion { border-color: #8B5CF6; }
+    .failure-card.clash { border-color: #EC4899; }
+
+    .failure-title {
+      font-weight: 700;
+      font-size: 1rem;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      border: 1px solid var(--border-color);
+      padding: 10px 14px;
+      text-align: left;
+    }
+
+    th {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--accent-blue);
+      font-weight: 600;
+    }
+
+    tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* Exam Section */
+    .exam-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+    }
+
+    .filter-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .filter-btn.active {
+      background: var(--accent-blue);
+      color: var(--bg-main);
+      font-weight: 700;
+      border-color: var(--accent-blue);
+    }
+
+    .timer-badge {
+      background: rgba(251, 191, 36, 0.15);
+      border: 1px solid var(--accent-yellow);
+      color: var(--accent-yellow);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .question-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      transition: border-color 0.2s ease;
+    }
+
+    .question-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .domain-tag {
+      font-size: 0.75rem;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent-blue);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .question-text {
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 1.25rem;
+      font-weight: 500;
+    }
+
+    .scenario-box {
+      background: rgba(15, 23, 42, 0.7);
+      border-left: 3px solid var(--accent-blue);
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 1rem;
+      font-size: 0.92rem;
+      line-height: 1.55;
+      color: #CBD5E1;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 1.25rem;
+    }
+
+    .option-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      transition: all 0.2s ease;
+      font-size: 0.92rem;
+    }
+
+    .option-item:hover {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: var(--accent-blue);
+    }
+
+    .option-item.selected {
+      background: rgba(56, 189, 248, 0.12);
+      border-color: var(--accent-blue);
+    }
+
+    .option-item.correct {
+      background: rgba(52, 211, 153, 0.15) !important;
+      border-color: var(--accent-green) !important;
+      color: #E2E8F0;
+    }
+
+    .option-item.incorrect {
+      background: rgba(248, 113, 113, 0.15) !important;
+      border-color: var(--danger) !important;
+    }
+
+    .opt-key {
+      font-weight: 700;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      font-size: 0.8rem;
+      flex-shrink: 0;
+    }
+
+    .explanation-box {
+      display: none;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .explanation-box.show {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .explanation-box h4 {
+      color: var(--accent-green);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-action {
+      background: var(--dbx-orange);
+      color: white;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-action:hover {
+      background: var(--dbx-orange-hover);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    /* Drill Flashcard */
+    .drill-card {
+      background: var(--bg-card);
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      max-width: 720px;
+      margin: 2rem auto;
+    }
+
+    .drill-scenario {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin: 1.5rem 0;
+      text-align: left;
+      background: rgba(15, 23, 42, 0.6);
+      padding: 1.25rem;
+      border-radius: 8px;
+    }
+
+    .drill-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 1.5rem;
+    }
+
+    .drill-choice-btn {
+      padding: 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-main);
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .drill-choice-btn:hover {
+      border-color: var(--accent-blue);
+      background: rgba(56, 189, 248, 0.1);
+    }
+
+    /* Score summary banner */
+    .score-banner {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.15) 0%, rgba(167, 139, 250, 0.15) 100%);
+      border: 1px solid var(--accent-blue);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    footer {
+      background: var(--dbx-slate);
+      border-top: 1px solid var(--border-color);
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: auto;
+    }
+
+    footer a {
+      color: var(--accent-blue);
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-container">
+      <div class="logo-area">
+        <span class="badge-icon">DATABRICKS CERTIFIED</span>
+        <div class="header-title">
+          <h1>Context Engineer Associate 対策ポータル</h1>
+          <p>2026年最新シラバス完全準拠 / 実践シナリオ問題集 & アーキテクチャ解説</p>
+        </div>
+      </div>
+      <nav>
+        <button class="nav-btn active" onclick="switchTab('dashboard')">📊 ダッシュボード</button>
+        <button class="nav-btn" onclick="switchTab('concepts')">📚 要点まとめ</button>
+        <button class="nav-btn" onclick="switchTab('exam')">📝 模擬試験 (25問)</button>
+        <button class="nav-btn" onclick="switchTab('drill')">⚡ 4大障害ドリル</button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- TAB 1: DASHBOARD -->
+    <section id="dashboard" class="tab-content active">
+      <div class="card">
+        <h2>試験スペック & ロードマップ概要</h2>
+        <div class="grid-4" style="margin-top: 1rem;">
+          <div class="metric-box">
+            <div class="metric-value">45問</div>
+            <div class="metric-label">問題数 (90分)</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-value">70%~</div>
+            <div class="metric-label">合格ライン想定</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-value">7</div>
+            <div class="metric-label">出題ドメイン</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-value">2年間</div>
+            <div class="metric-label">有効期間</div>
+          </div>
+        </div>
+        <div style="margin-top: 1.5rem; line-height: 1.6; color: #CBD5E1;">
+          <p><strong>Databricks Certified Context Engineer Associate</strong> は、2026年5月の Data + AI Summit で発表された、AI エージェントの本番運用（Production-grade）における「推論時コンテキスト制御」を評価する業界初の専門資格です。</p>
+          <p style="margin-top: 0.5rem;">プロンプトの文面調整だけでなく、<strong>Unity Catalog によるガバナンス、AI Search / RAG、Lakebase と MLflow 3 によるメモリ状態管理、MCP (Model Context Protocol) ツール設計、コンパクション、マルチエージェント協調</strong> を統合したシステム設計力が問われます。</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h2>全 7 ドメイン構成比 & 出題焦点</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>ドメイン</th>
+                <th>重要トピック</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>1. 基礎 & 障害分析</strong></td>
+                <td>コンテキスト障害4分類 (Poisoning, Distraction, Confusion, Clash)、推論モード</td>
+              </tr>
+              <tr>
+                <td><strong>2. プロンプト & Genie</strong></td>
+                <td>Genie Trusted Assets (View/UDF)、Few-shot 限界貢献度、MLflow 追跡</td>
+              </tr>
+              <tr>
+                <td><strong>3. 知識検索 & ガバナンス</strong></td>
+                <td>Pre-inference vs JIT 検索、Markdown 構造チャンキング、Authoritative 資産分離</td>
+              </tr>
+              <tr>
+                <td><strong>4. メモリ設計 (Lakebase)</strong></td>
+                <td>短期 (Session) vs 長期 (Lakebase/Delta)、意図解決 (Intent Resolution)</td>
+              </tr>
+              <tr>
+                <td><strong>5. ツール & MCP</strong></td>
+                <td>Progressive Disclosure (段階開示)、ツール説明重複の解消、中間ログ消去</td>
+              </tr>
+              <tr>
+                <td><strong>6. 圧縮 & コンパクション</strong></td>
+                <td>Recall First & Precision Second 原則、安全な破棄要素、Trimming との比較</td>
+              </tr>
+              <tr>
+                <td><strong>7. マルチエージェント</strong></td>
+                <td>親トレース漏洩防止、Delta テーブル退避 (URI返却)、エージェント境界設計</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <h2>公式リファレンス & 推奨リソース</h2>
+          <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px; margin-top: 0.5rem;">
+            <li style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
+              <a href="https://www.databricks.com/learn/certification/context-engineer-associate" target="_blank" style="color: var(--accent-blue); font-weight: 700; text-decoration: none;">🔗 公式認定ページ (Databricks.com)</a>
+              <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">試験登録、試験要件、最新アップデート案内</div>
+            </li>
+            <li style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
+              <a href="https://www.databricks.com/sites/default/files/2026-07/databricks-certified-context-engineer-associate-exam-guide.pdf" target="_blank" style="color: var(--accent-blue); font-weight: 700; text-decoration: none;">📄 公式 Exam Guide PDF (2026年7月版)</a>
+              <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">全 7 ドメイン・36 項目の出題シラバス詳細定義</div>
+            </li>
+            <li style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
+              <a href="https://www.databricks.com/sites/default/files/2026-06/ai-prep-guide-any-databricks-certification.pdf" target="_blank" style="color: var(--accent-blue); font-weight: 700; text-decoration: none;">🤖 公式 AI Certification Prep Guide PDF</a>
+              <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">LLM を活用した試験対策の公式プロンプティングガイドライン</div>
+            </li>
+            <li style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
+              <span style="color: var(--accent-green); font-weight: 700;">🎓 Databricks Academy 推奨コース</span>
+              <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">AI Agent Fundamentals / Building Retrieval Agents / Agent Evaluation</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: CONCEPTS -->
+    <section id="concepts" class="tab-content">
+      <div class="card">
+        <h2>Domain 1: コンテキスト障害の 4 大分類 (Failure Modes)</h2>
+        <p style="color: var(--text-muted); margin-bottom: 1.25rem;">試験で最も頻出する診断シナリオです。障害の兆候から正確に分類できることが必須となります。</p>
+        
+        <div class="grid-2">
+          <div class="failure-card poisoning">
+            <div class="failure-title" style="color: #F87171;">
+              <span>1. Context Poisoning (コンテキスト汚染)</span>
+              <span>高リスク</span>
+            </div>
+            <p style="font-size: 0.88rem; line-height: 1.5; color: #CBD5E1;"><strong>症状:</strong> 外部検索やツールから誤情報、ドラフト文書、古い規約がコンテキストに入り込み、エージェントがそれを真実と信じて推論を展開する。</p>
+            <p style="font-size: 0.82rem; color: var(--accent-yellow); margin-top: 6px;"><strong>対策:</strong> Unity Catalog で Authoritative (公式) 資産のみに検索を絞る、データソースの厳格な検証。</p>
+          </div>
+
+          <div class="failure-card distraction">
+            <div class="failure-title" style="color: #FBBF24;">
+              <span>2. Context Distraction (注意散漫)</span>
+              <span>頻出</span>
+            </div>
+            <p style="font-size: 0.88rem; line-height: 1.5; color: #CBD5E1;"><strong>症状:</strong> 無関係な大量のログや無駄なテーブル行がプロンプトに溢れ、LLM のアテンションが埋没し、重要な指示や制約を見落とす。</p>
+            <p style="font-size: 0.82rem; color: var(--accent-yellow); margin-top: 6px;"><strong>対策:</strong> チャンクサイズの縮小、JIT 検索によるピンポイント取得、生ログのプルーニング。</p>
+          </div>
+
+          <div class="failure-card confusion">
+            <div class="failure-title" style="color: #A78BFA;">
+              <span>3. Context Confusion (混同)</span>
+              <span>設計ミス</span>
+            </div>
+            <p style="font-size: 0.88rem; line-height: 1.5; color: #CBD5E1;"><strong>症状:</strong> 似た名前や類似した説明文を持つ複数のツールやカラムが存在し、モデルが誤ったツールや引数を呼び出してしまう。</p>
+            <p style="font-size: 0.82rem; color: var(--accent-yellow); margin-top: 6px;"><strong>対策:</strong> ツール説明文の差別化 (Disambiguation)、入力パラメータスキーマの厳密化。</p>
+          </div>
+
+          <div class="failure-card clash">
+            <div class="failure-title" style="color: #F472B6;">
+              <span>4. Context Clash (衝突)</span>
+              <span>論理矛盾</span>
+            </div>
+            <p style="font-size: 0.88rem; line-height: 1.5; color: #CBD5E1;"><strong>症状:</strong> システムプロンプトの指示と、検索された文書内の指示や外部ツールの出力が矛盾し、エージェントがデッドロックや一貫性のない出力を出す。</p>
+            <p style="font-size: 0.82rem; color: var(--accent-yellow); margin-top: 6px;"><strong>対策:</strong> 指示の優先順位付け (システムプロンプト優先の明示)、競合するメタデータの排除。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Domain 2 & 3: Genie & Unity Catalog ナレッジ設計</h2>
+        <div class="grid-2">
+          <div>
+            <h3>Genie Space の Trusted Assets パターン</h3>
+            <p style="font-size: 0.9rem; line-height: 1.6; color: #CBD5E1;">
+              Genie に長文のプロンプトで集計計算式を書かせるのはアンチパターンです。
+              売上集計、MRR、顧客解約判定などの重要ロジックは、<strong>Unity Catalog 内で SQL UDF やビュー (Views) として事前定義し、Genie の「Trusted Assets」として登録</strong> します。モデルは SQL 生成をハルシネーションすることなく、検証済みアセットを直接実行します。
+            </p>
+          </div>
+          <div>
+            <h3>Pre-inference vs Just-in-Time (JIT) 検索</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>項目</th>
+                  <th>Pre-inference (事前取得)</th>
+                  <th>JIT Agentic (動的取得)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>取得契機</strong></td>
+                  <td>モデル推論前に RAG で一括取得</td>
+                  <td>推論中にツール呼出で動的取得</td>
+                </tr>
+                <tr>
+                  <td><strong>適した用途</strong></td>
+                  <td>単一質問、FAQ、ドキュメント要約</td>
+                  <td>複数ステップ調査、最新テーブル参照</td>
+                </tr>
+                <tr>
+                  <td><strong>コンテキスト負荷</strong></td>
+                  <td>常に Top-K チャンクが占有</td>
+                  <td>必要な差分のみ都度流入</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Domain 5: MCP (Model Context Protocol) & Progressive Disclosure</h2>
+        <div style="background: rgba(15, 23, 42, 0.6); padding: 1.25rem; border-radius: 8px; margin-top: 0.75rem;">
+          <h3 style="color: var(--accent-green); margin-top: 0;">段階的情報開示 (Progressive Disclosure) の 3 ステップ</h3>
+          <p style="font-size: 0.92rem; line-height: 1.6; margin-top: 6px;">
+            80 個のツールの巨大な JSON スキーマをシステムプロンプトに常時展開すると、それだけで数万トークンを消費します。Progressive Disclosure ではコンテキストを 3 段階に分けて投入します：
+          </p>
+          <div class="grid-3" style="margin-top: 1rem;">
+            <div style="border: 1px solid var(--border-color); padding: 12px; border-radius: 6px; background: rgba(255,255,255,0.02);">
+              <strong style="color: var(--accent-blue);">Step 1: Discovery</strong>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">ツール名と 1 行概要のリストのみを初期コンテキストに渡す (数千トークン削減)。</p>
+            </div>
+            <div style="border: 1px solid var(--border-color); padding: 12px; border-radius: 6px; background: rgba(255,255,255,0.02);">
+              <strong style="color: var(--accent-yellow);">Step 2: Inspection</strong>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">エージェントが必要と判断したツールのみ、動的に詳細な引数スキーマを取得する。</p>
+            </div>
+            <div style="border: 1px solid var(--border-color); padding: 12px; border-radius: 6px; background: rgba(255,255,255,0.02);">
+              <strong style="color: var(--accent-green);">Step 3: Execution</strong>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">引数を渡して実行。巨大な生出力は要約後に履歴からプルーニング (削除) する。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Domain 6 & 7: コンパクション鉄則 & マルチエージェント設計</h2>
+        <div class="grid-2">
+          <div>
+            <h3>Compaction の鉄則「Recall First」</h3>
+            <p style="font-size: 0.9rem; line-height: 1.6; color: #CBD5E1;">
+              長時間の対話で要約を行う際、最初から短さを追求すると「ユーザーの指定した除外ルール」や「エンティティID」が脱落します。
+              <strong>第1段階として必要な制約・変数を100%拾い切る (Recall 優先)</strong> チューニングを行い、その後に冗長な中間思考を削る (Precision 最適化) のが Databricks の推奨アプローチです。
+            </p>
+          </div>
+          <div>
+            <h3>Orchestrator のコンテキスト飽和防止</h3>
+            <p style="font-size: 0.9rem; line-height: 1.6; color: #CBD5E1;">
+              サブエージェントが 10 万行のデータを分析した際、親に生データをテキストで返すと親のコンテキストが即座にパンクします。
+              <strong>サブエージェントは詳細データを Unity Catalog の Delta テーブルに書き込み、親には「Delta テーブル URI」と「軽量な構造化サマリー (200トークン)」のみを返す</strong> のが本番アーキテクチャの急所です。
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: EXAM (25 SCENARIO QUESTIONS) -->
+    <section id="exam" class="tab-content">
+      <div class="score-banner" id="scoreBanner" style="display: none;">
+        <div>
+          <h3 style="font-size: 1.25rem;">採点結果: <span id="scoreText">0 / 0</span> (<span id="scorePercent">0%</span>)</h3>
+          <p id="scoreMessage" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;"></p>
+        </div>
+        <button class="btn-secondary" onclick="resetExam()">もう一度解く</button>
+      </div>
+
+      <div class="exam-header">
+        <div class="filter-group">
+          <button class="filter-btn active" onclick="filterQuestions('all')">全問題 (25問)</button>
+          <button class="filter-btn" onclick="filterQuestions('Domain 1')">Domain 1 (基礎)</button>
+          <button class="filter-btn" onclick="filterQuestions('Domain 2')">Domain 2 (Genie)</button>
+          <button class="filter-btn" onclick="filterQuestions('Domain 3')">Domain 3 (検索)</button>
+          <button class="filter-btn" onclick="filterQuestions('Domain 4')">Domain 4 (メモリ)</button>
+          <button class="filter-btn" onclick="filterQuestions('Domain 5')">Domain 5 (MCP)</button>
+          <button class="filter-btn" onclick="filterQuestions('Domain 6')">Domain 6 (圧縮)</button>
+          <button class="filter-btn" onclick="filterQuestions('Domain 7')">Domain 7 (マルチAgent)</button>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <div class="timer-badge">⏱️ 残り時間: <span id="timerDisplay">90:00</span></div>
+          <button class="btn-action" onclick="submitExam()">採点する</button>
+        </div>
+      </div>
+
+      <div id="questionsContainer"></div>
+    </section>
+
+    <!-- TAB 4: FAILURE MODE DRILL -->
+    <section id="drill" class="tab-content">
+      <div class="card" style="text-align: center; max-width: 800px; margin: 0 auto;">
+        <h2>⚡ 4 大障害モード 診断フラッシュドリル</h2>
+        <p style="color: var(--text-muted); margin-top: 6px;">実際のトラブルシュートトレースを読み、4つの障害モードから正解を即座に判定してください。</p>
+
+        <div class="drill-card">
+          <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--accent-blue); font-weight: 700;">
+            <span>Question <span id="drillIndex">1</span> / <span id="drillTotal">5</span></span>
+            <span>連続正解: <span id="drillStreak">0</span></span>
+          </div>
+
+          <div class="drill-scenario" id="drillScenario">読み込み中...</div>
+
+          <div class="drill-buttons">
+            <button class="drill-choice-btn" onclick="answerDrill('Context Poisoning')">🚨 Context Poisoning (汚染)</button>
+            <button class="drill-choice-btn" onclick="answerDrill('Context Distraction')">🌪️ Context Distraction (注意散漫)</button>
+            <button class="drill-choice-btn" onclick="answerDrill('Context Confusion')">🔀 Context Confusion (混同)</button>
+            <button class="drill-choice-btn" onclick="answerDrill('Context Clash')">⚔️ Context Clash (衝突)</button>
+          </div>
+
+          <div id="drillFeedback" style="margin-top: 1.25rem; font-size: 0.95rem; line-height: 1.6; display: none;"></div>
+          <button id="drillNextBtn" class="btn-action" style="margin-top: 1rem; display: none;" onclick="nextDrill()">次の問題へ</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Databricks Certified Context Engineer Associate Prep Portal | Generated for Internal Practice & Learning</p>
+    <p style="margin-top: 4px;">Based on official Databricks 2026 certification syllabus & architectural best practices.</p>
+  </footer>
+
+  <script>
+    // --- QUESTION DATA (25 High-Quality Questions) ---
+    const examQuestions = [
+      {
+        id: 1,
+        domain: "Domain 1",
+        title: "コンテキスト障害モードの診断",
+        scenario: "ナレッジ検索エージェントにおいて、ユーザーがアップロードした非公式なドラフト文書（古い返金規約: 90日以内全額返金）がベクトル検索で取得された。システムプロンプトには『公式規約（30日以内）に従うこと』と定義されていたにもかかわらず、エージェントはドラフト文書の記述を事実として採用し、ユーザーに90日以内の全額返金を案内してしまった。",
+        question: "このエージェントで発生しているコンテキスト障害モードとして、最も適切なものはどれか。",
+        options: [
+          "Context Distraction",
+          "Context Poisoning",
+          "Context Confusion",
+          "Context Clash"
+        ],
+        answer: 1,
+        explanation: "誤った情報や非公式なデータ（汚染源）がコンテキストに注入され、エージェントがそれを真実として推論の基礎にしてしまう現象は Context Poisoning (コンテキスト汚染) です。Unity Catalog による Authoritative 資産のフィルタリングが対策となります。"
+      },
+      {
+        id: 2,
+        domain: "Domain 1",
+        title: "プロアクティブなコンテキスト制御",
+        scenario: "社内業務エージェントのコンテキストウィンドウが、わずか3往復の対話で上限近くまで圧迫されている。後からLLMによる要約（コンパクション）を行う前に、事前にトークン流入を抑えるプロアクティブ制御を導入したい。",
+        question: "コンテキストウィンドウの圧迫を事前に防ぐためのアプローチとして最も効果的な組み合わせはどれか。",
+        options: [
+          "モデルのサンプリング温度を下げ、出力トークン長を制限する",
+          "初期ツールセットの最小化、JIT (Just-in-Time) 検索、およびツール実行結果のスコープ限定",
+          "すべての会話ログを毎ターン終了時に自動削除する",
+          "ベクトル検索の Top-K 取得数を現在の 5 から 20 に増やす"
+        ],
+        answer: 1,
+        explanation: "プロアクティブなコンテキスト管理戦略とは、コンパクションが必要になる前に「必要最小限のツールのみ公開する」「必要な時にだけ検索する (JIT)」「ツールの戻り値を必要な項目だけに絞る (スコープ限定)」によって無駄なトークン流入を抑えることです。"
+      },
+      {
+        id: 3,
+        domain: "Domain 1",
+        title: "Reasoning Mode の選定",
+        scenario: "Databricks 上で動作するコードレビューエージェントと、単純なログエラー分類エージェントの2つを運用している。トークンバジェットと推論レイテンシを最適化したい。",
+        question: "各タスクに割り当てる推論モード（Reasoning Mode）の組み合わせとして最も適切なものはどれか。",
+        options: [
+          "両方とも Extended Thinking に設定する",
+          "コードレビューには Extended Thinking、ログ分類には Reduced Thinking を設定する",
+          "コードレビューには Reduced Thinking、ログ分類には Extended Thinking を設定する",
+          "両方とも Standard Thinking のみに固定し変更不可とする"
+        ],
+        answer: 1,
+        explanation: "複雑な構文解析、依存関係検証、論理的推論が求められるコードレビューには追加の推論トークンを割り当てる Extended Thinking が適しています。一方、固定フォーマットや単純抽出を行うログ分類にはトークンと遅延を抑える Reduced Thinking が最適です。"
+      },
+      {
+        id: 4,
+        domain: "Domain 2",
+        title: "Genie Space の精度改善と Trusted Assets",
+        scenario: "財務部門向けに AI/BI Genie スペースを構築した。ユーザーが「今四半期の MRR 推移」を質問した際、Genie は単純な合計計算を行う誤ったアドホック SQL を生成してしまい、解約や割引を考慮した社内定義と乖離した。",
+        question: "トークン消費を抑えつつ、最も確実かつ保守性の高い方法で Genie の精度を改善するアプローチはどれか。",
+        options: [
+          "システム指示に 50 行に及ぶ MRR の計算 SQL ロジックをプロンプトとして直接書き込む",
+          "正式な MRR 計算ロジックを実装した SQL UDF またはビューを Unity Catalog に作成し、Genie スペースの Trusted Assets として登録する",
+          "Genie スペースのサンプル質問に、過去 1 年分の全四半期の質問・回答ペアを 30 個登録する",
+          "テーブルの全カラムコメントに MRR 計算式をコピー＆ペーストする"
+        ],
+        answer: 1,
+        explanation: "Databricks の推奨ベストプラクティスでは、複雑なビジネスロジックはプロンプトで長文を書くのではなく、Unity Catalog で管理されたビューや SQL UDF を作成し、Genie の「Trusted Assets（信頼できる資産）」として登録します。"
+      },
+      {
+        id: 5,
+        domain: "Domain 2",
+        title: "Few-shot サンプルの選定とトークンバジェット",
+        scenario: "エージェントのプロンプト内に含める Few-shot 例を検討している。トークンバジェットには厳しい上限があり、候補が 10 例ある。",
+        question: "Few-shot サンプルを選定する際の基準として、最も適切なものはどれか。",
+        options: [
+          "最も単純で標準的な成功例を 10 個すべてプロンプトに詰め込む",
+          "未知のツール実行パス、特殊な出力フォーマット、曖昧入力の聞き返しなど、限界貢献度（Marginal Contribution）の高いサンプルを厳選して 2〜3 個に絞る",
+          "Few-shot サンプルはトークンを消費するため一切使用せず、ゼロショットのみとする",
+          "ユーザーの過去の全チャット履歴をそのまま Few-shot としてロードする"
+        ],
+        answer: 1,
+        explanation: "Few-shot の選定原則は「限界貢献度（Marginal Contribution）」の最大化です。モデルが通常間違えやすいエッジケースや、特殊な JSON 出力構造の強制など、効果の高い少数例に絞ることでトークンを節約します。"
+      },
+      {
+        id: 6,
+        domain: "Domain 2",
+        title: "MLflow 実験追跡によるコスト・性能トレードオフ",
+        scenario: "エージェントのプロンプト構成 A（ベースライン: 1,500 トークン）と構成 B（詳細指示追加: 4,500 トークン）を MLflow 3 で評価した。タスク成功率は構成 A が 88%、構成 B が 89% であったが、推論コストは B が 3 倍高かった。",
+        question: "アーキテクトとして判断すべきアクションとして最も適切なものはどれか。",
+        options: [
+          "成功率が 1% でも高い構成 B を本番にデプロイする",
+          "構成 B のコスト増加は正当化できないため構成 A を採用し、失敗した 12% のトレースを分析してピンポイントな指示改善またはツール側での制約を検討する",
+          "モデルをより大型のプロプライエタリモデルに変更して再評価する",
+          "プロンプトをさらに長くして成功率 100% を目指す"
+        ],
+        answer: 1,
+        explanation: "わずか 1% の性能向上のために 3 倍のトークンコストを払うことは本番運用上正当化されません。MLflow のトレースログから失敗ケースを分析し、プロンプトの肥大化ではなくツール側での制約や意図解決で改善するのが健全なアプローチです。"
+      },
+      {
+        id: 7,
+        domain: "Domain 3",
+        title: "RAG チャンキング戦略の選定",
+        scenario: "API 仕様書や技術マニュアル（コードブロックや見出しが多数含まれる）を対象とした Databricks AI Search 駆動の RAG エージェントを構築している。ユーザーは関数の引数仕様や特定のエラーコードを頻繁に質問する。",
+        question: "検索精度（Faithfulness）を最大化し、Context Distraction を防ぐチャンキング戦略はどれか。",
+        options: [
+          "固定長 4,000 トークンでドキュメントの章ごと分割する",
+          "Markdown の見出し構造を意識した構造化チャンキングを採用し、256〜512 トークン程度の小さなチャンクに分割した上で親ドキュメントのメタデータを付与する",
+          "チャンキングを行わず、ドキュメント全文をそのままプロンプトに流し込む",
+          "単語単位（1単語1チャンク）でインデックス化する"
+        ],
+        answer: 1,
+        explanation: "局所的な関数仕様やエラーコードの照会には、小さなチャンクサイズ（256〜512トークン）と Markdown 構造を保った分割が最適です。無関係な文脈の流入（Distraction）を防ぎ、ピンポイントで必要な定義を取得できます。"
+      },
+      {
+        id: 8,
+        domain: "Domain 3",
+        title: "Pre-inference vs Just-in-Time 検索",
+        scenario: "データ分析エージェントが、ユーザーからの依頼に応じて最新の注文状況を集計し、さらに異常値があった場合は詳細テーブルを深掘り調査する必要がある。",
+        question: "このユースケースに適した情報取得戦略はどれか。",
+        options: [
+          "ユーザーの質問時に全関連テーブルの全データを一括でプロンプトに埋め込む Pre-inference 検索",
+          "推論開始時には最低限のスキーマのみを渡し、エージェントが必要と判断したステップで動的に SQL クエリやツールを実行して差分データを取得する JIT (Just-in-Time) エージェント検索",
+          "すべての検索を禁止し、モデルの事前学習知識のみで回答させる",
+          "外部検索を行わず、セッション履歴のみを参照させる"
+        ],
+        answer: 1,
+        explanation: "複数ステップの推論や条件分岐、動的な集計を伴うタスクには、推論の途中で動的にツールを呼び出す JIT (Just-in-Time) Agentic Retrieval が最適です。"
+      },
+      {
+        id: 9,
+        domain: "Domain 3",
+        title: "Unity Catalog 探索空間のガバナンス",
+        scenario: "本番デプロイ予定のエージェントが、開発用スキーマ（dev_*）や非公式な中間テーブルを誤って検索・参照してしまい、不正確な数値を回答するリスクが判明した。",
+        question: "エージェントが参照するコンテキストを安全に制御するための Unity Catalog ガバナンス戦略はどれか。",
+        options: [
+          "エージェントのシステムプロンプトに『開発テーブルは見ないでください』と強く書き添える",
+          "Unity Catalog のタグやカタログ分離を活用し、本番環境のサービスプリンシパルの権限を Authoritative (公式) と認定されたテーブル・ビューのみに厳格に制限する",
+          "開発用テーブルをすべて物理削除する",
+          "すべてのテーブルにパブリックアクセス権 (ALL PRIVILEGES) を与える"
+        ],
+        answer: 1,
+        explanation: "プロンプトによる指示だけではモデルが誤って参照するリスクを排除できません。Unity Catalog の権限モデル（GRANT / REVOKE）およびタグによる探索空間の制約を行い、正規ソース（Authoritative）のみにアクセス権を制限するのが確実です。"
+      },
+      {
+        id: 10,
+        domain: "Domain 3",
+        title: "Unity Catalog メタデータ不足の是正",
+        scenario: "AI/BI Genie が `cust_status` カラムの意味（'A'=Active, 'S'=Suspended, 'T'=Terminated）を理解できず、誤ったフィルタ条件の SQL を生成した。",
+        question: "最も直接的かつ影響度の高い恒久対策はどれか。",
+        options: [
+          "Unity Catalog の該当カラムに COMMENT を付与し、各コード値の定義とビジネスルールを明記する",
+          "テーブル名を `customer_with_active_suspended_terminated` にリネームする",
+          "Genie スペースを削除して標準のダッシュボードに切り替える",
+          "Python のスクリプトで毎回テーブルを文字列置換する"
+        ],
+        answer: 0,
+        explanation: "Genie やエージェントは Unity Catalog のメタデータ（テーブルコメント、カラムコメント）をコンテキストとして直接利用します。コード値の意味をカラムコメントに明記することが最もインパクトの高い改善策です。"
+      },
+      {
+        id: 11,
+        domain: "Domain 4",
+        title: "メモリソースのミスマッチ解消",
+        scenario: "サポートエージェントが『先ほどお伝えした1つ目の商品についてキャンセルしたい』と言われた際、直前の会話履歴を見ずに、外部の Lakebase 過去注文テーブルを検索して2年前の古い注文を取得してしまった。",
+        question: "この設計不備を解消するための適切なアーキテクチャ介入はどれか。",
+        options: [
+          "Lakebase のテーブルを削除する",
+          "外部メモリを検索する前に、現在の会話履歴（Session History）から指示代名詞（先ほど、1つ目の等）の参照先を特定する Intent Resolution (意図解決) ステージを導入する",
+          "会話履歴の保持を禁止する",
+          "Lakebase のベクトル検索 Top-K を増やす"
+        ],
+        answer: 1,
+        explanation: "指示代名詞や直前の文脈解決には短期のセッション履歴を優先すべきであり、外部長期メモリへの不適切な依存はミスマッチです。意図解決（Intent Resolution）ステージを挟むことで正しく文脈を解決できます。"
+      },
+      {
+        id: 12,
+        domain: "Domain 4",
+        title: "Lakebase における検索方式の使い分け",
+        scenario: "エージェントが Lakebase に保存されたユーザープロファイルと設定情報を取得する際、特定の `user_id = 'U98765'` に完全一致する確定設定をロードしたい。",
+        question: "この要件に対して適切なメカニズムはどれか。",
+        options: [
+          "Databricks AI Search によるベクトル類似度検索",
+          "プライマリキーや属性フィルタを用いた構造化クエリ (Structured Query)",
+          "すべてのユーザー設定を全件取得してプロンプトでフィルタリング",
+          "ランダムサンプリング"
+        ],
+        answer: 1,
+        explanation: "一意のキーや確定した属性値に基づく情報取得には、ベクトル類似度検索ではなく構造化クエリ（SQL / Key-Value ルックアップ）を使用するのが正確で確実です。"
+      },
+      {
+        id: 13,
+        domain: "Domain 4",
+        title: "Delta-backed State Object の必要性",
+        scenario: "数日間にわたり複数の承認ステップや外部システム連携を伴う長期間のバッチ分析タスクを管理するエージェントを構築する。",
+        question: "In-context Scratchpad（プロンプト内メモ）ではなく、Delta-backed State Object が必須となる理由はどれか。",
+        options: [
+          "Delta-backed State の方がトークン消費量が常にゼロだから",
+          "セッションの中断・再起動、コンピュート障害時の復元性（耐障害性）、および複数セッション間での永続的な状態共有が必要だから",
+          "In-context Scratchpad には文字列を保存できないから",
+          "Databricks では Delta 以外の状態管理が禁止されているから"
+        ],
+        answer: 1,
+        explanation: "プロンプト内の一時メモ（In-context scratchpad）はセッション終了やコンピュートの再起動で失われます。長期タスクや耐障害性が求められる場合は、Delta テーブルや Lakebase に状態を永続化する必要があります。"
+      },
+      {
+        id: 14,
+        domain: "Domain 4",
+        title: "Over-retrieval (コンテキスト汚染) のリスク",
+        scenario: "メモリ検索において、想起漏れ（Under-retrieval）を恐れて過去の全チャット履歴から類似スコアの低いものまで大量に Top-20 件取得してコンテキストに挿入した。",
+        question: "この過剰取得（Over-retrieval）によって引き起こされる主要なリスクはどれか。",
+        options: [
+          "モデルが高速化しすぎるリスク",
+          "無関係・陳腐化した過去の文脈がコンテキストを汚染し（Context Pollution）、注意散漫やハルシネーションを誘発するリスク",
+          "トークン消費量がゼロになるリスク",
+          "データベースのストレージ容量が枯渇するリスク"
+        ],
+        answer: 1,
+        explanation: "過剰な情報取得は Context Pollution（汚染）および Distraction（注意散漫）を引き起こし、モデルの焦点がぼやけて精度の低下や誤回答の原因になります。"
+      },
+      {
+        id: 15,
+        domain: "Domain 5",
+        title: "MCP Progressive Disclosure の適用",
+        scenario: "エージェントに 70 種類以上の MCP ツールを連携させたところ、システムプロンプトの初期トークン消費だけで 35,000 トークンを超え、すぐにウィンドウ上限に達してしまう。",
+        question: "ツールの実行精度を維持したまま、ベースライントークンを最小化する設計パターンはどれか。",
+        options: [
+          "Progressive Disclosure（段階的情報開示）を採用し、初期プロンプトにはツール名と 1 行概要のリストのみを提供し、エージェントが必要と判断したツールのみ動的に詳細スキーマを取得させる",
+          "ツールの引数説明をすべて削除し、引数名のみにする",
+          "使っていないツールを 60 個恒久的に削除する",
+          "モデルを小型のオープンソースモデルに切り替える"
+        ],
+        answer: 0,
+        explanation: "Progressive Disclosure では、初期状態ではツールのインデックス（名前と概要）のみを公開し、モデルが必要と判断した時点でメタツールを介して完全な定義を取得させることで、常時消費するトークンを劇的に削減できます。"
+      },
+      {
+        id: 16,
+        domain: "Domain 5",
+        title: "ツール定義の曖昧性解消 (Disambiguation)",
+        scenario: "エージェントに `search_customer_by_name` と `find_user_account` という2つのツールを登録したところ、エージェントが顧客検索の際にどちらを呼ぶべきか頻繁に迷い、誤ったツールを呼び出している。",
+        question: "この障害モードの名称と、最も直接的な解消策の組み合わせはどれか。",
+        options: [
+          "Context Distraction: チャンクサイズを小さくする",
+          "Context Confusion: 各ツールの責務、対象エンティティ、使用すべき状況を説明文（Description）で明確に差別化する",
+          "Context Poisoning: データベースのインデックスを再作成する",
+          "Context Clash: プロンプトの長さを 2 倍にする"
+        ],
+        answer: 1,
+        explanation: "類似ツール間の迷いは Context Confusion です。各ツールの説明文（Description）において、ユースケースや対象データの違いを明確に記述することで解決します。"
+      },
+      {
+        id: 17,
+        domain: "Domain 5",
+        title: "生ツール出力 (Raw Output) のプルーニング",
+        scenario: "エージェントが過去のステップで 10,000 行の JSON データを返す API ツールを実行し、必要な集計値を回答テキストとして生成済みである。しかし、会話が続くにつれて過去の巨大な JSON 出力がコンテキストを圧迫し続けている。",
+        question: "この状況に対する推奨プラクティスはどれか。",
+        options: [
+          "巨大な生データはそのまま履歴に残し続ける",
+          "集計・抽出が完了した過去の生の巨大出力は、コンテキスト履歴から削除するか、簡潔なサマリーや参照ポインタに置換（プルーニング）する",
+          "ユーザーとのセッションを強制終了する",
+          "モデルの最大出力トークン数を引き上げる"
+        ],
+        answer: 1,
+        explanation: "すでに必要な情報の抽出が済んだ中間ツールの生出力（Raw tool output）は、履歴から削除（クリア）するか要約に置き換えることで、ウィンドウの空き容量を確保します。"
+      },
+      {
+        id: 18,
+        domain: "Domain 5",
+        title: "Agent Skills へのカプセル化",
+        scenario: "エージェントのシステムプロンプトに、年に数回しか発生しない特定のエラーログ解析ロジックや特殊スクリプトの手順が 2,000 トークン分記載されており、日常的な対話でも無駄にトークンを消費している。",
+        question: "この稀な機能を効率的に管理するための設計はどれか。",
+        options: [
+          "その機能を完全に削除し対応不可とする",
+          "その専門手順を独立した「Agent Skill（ファイルまたは UC 関数）」としてパッケージ化し、必要時にのみ動的にロードさせる",
+          "システムプロンプトの文字フォントを小さくする",
+          "ユーザーに毎回その手順をコピペ入力させる"
+        ],
+        answer: 1,
+        explanation: "めったに使われない専門知識や特定手順は、常時プロンプトに常駐させず「Agent Skills」として外部化し、必要時のみオンデマンドで読み込むのがベストプラクティスです。"
+      },
+      {
+        id: 19,
+        domain: "Domain 6",
+        title: "コンパクションの鉄則「Recall First」",
+        scenario: "長時間の分析タスクでコンテキスト要約（Compaction）を実行したところ、ユーザーが最初に指示していた『2024年以降のデータのみ対象、テストアカウント除外』という前提制約が要約文から消え去り、全件集計を行ってしまった。",
+        question: "コンパクションプロンプトを改修する方針として最も適切なものはどれか。",
+        options: [
+          "要約をさらに短くして 50 トークン以内に制限する",
+          "『Recall First』の原則に従い、ユーザーが提示したすべての制約条件、除外ルール、フィルタ条件を省略せずに確実に抽出・保持するよう要約プロンプトを修正する",
+          "要約を廃止し、古いメッセージを単純に切り捨てる Trimming に戻す",
+          "コンパクションを小型モデルに任せる"
+        ],
+        answer: 1,
+        explanation: "Compaction Tuning の大原則は「Recall First, Precision Second」です。まずは重要な制約やエンティティを 100% 漏らさず拾い切るプロンプトにし、その後に不要なノイズを削ります。"
+      },
+      {
+        id: 20,
+        domain: "Domain 6",
+        title: "コンパクションで削除安全な要素",
+        scenario: "エージェントの実行トレースを要約・圧縮する際、安全に削除できる要素と保持すべき要素を分別している。",
+        question: "コンパクション時に安全に破棄できる要素はどれか。",
+        options: [
+          "ユーザーの最終ゴールと満たすべき制約条件",
+          "確定した顧客 ID やトランザクション ID",
+          "すでに成功裏に完了し要約済みのツール呼び出しの中間生ログや、失敗して再試行されたエラーのスタックトレース",
+          "現在のタスク完了ステータス"
+        ],
+        answer: 2,
+        explanation: "中間ステップで完了したツールの生データや、リトライ済みの失敗トレースは下流タスクの推論に不要であるため、安全に削除（Purge）できます。"
+      },
+      {
+        id: 21,
+        domain: "Domain 6",
+        title: "Trimming vs Compaction のトレードオフ",
+        scenario: "単純なスライディングウィンドウによる古いメッセージの削除（Trimming）と、LLM を用いた文脈要約（Compaction）を比較している。",
+        question: "Trimming が適さない典型的なシナリオはどれか。",
+        options: [
+          "会話の最初に対話の前提条件やビジネス制約が提示され、それを最後まで維持し続ける必要がある長期タスク",
+          "直前の1往復のやり取りだけで完結する単純なチャット",
+          "コンピュートコストを 1 円もかけられないシステム",
+          "トークン消費量が 100 トークン未満のシステム"
+        ],
+        answer: 0,
+        explanation: "Trimming（FIFO による切り捨て）を行うと、最も古いメッセージ（＝ユーザーが最初に指定した前提やゴール）から順番に消えていくため、制約が重要な長期タスクでは破綻します。"
+      },
+      {
+        id: 22,
+        domain: "Domain 7",
+        title: "親トレース漏洩の防止",
+        scenario: "オーケストレーターエージェントが、特定のサブタスク（例: SQL クエリの文法チェック）をサブエージェントに依頼する設計を行っている。",
+        question: "サブエージェントを起動する際のコンテキスト渡しとして最も適切な設計はどれか。",
+        options: [
+          "親エージェントの過去 20 ターンの全思考ログと全ツール結果をそのまま渡す",
+          "サブエージェントの目的達成に必要なタスク指示と、対象となる SQL 文字列のみを分離して渡し、親の無関係なトレースは伝播させない",
+          "何も指示を渡さず、サブエージェントに推測させる",
+          "親エージェントのシステムプロンプト全体を丸ごとコピーする"
+        ],
+        answer: 1,
+        explanation: "親の全トレースを子に渡すと、子のコンテキストが即座に肥大化し、Context Distraction を招きます。サブエージェントにはそのタスクに必要なコンテキストのみを限定して渡すのが鉄則です。"
+      },
+      {
+        id: 23,
+        domain: "Domain 7",
+        title: "オーケストレーターのコンテキスト飽和防止",
+        scenario: "マルチエージェントシステムで、サブエージェントが 50 万行のアクセスログを解析した。その詳細結果を親オーケストレーターに共有したい。",
+        question: "オーケストレーターのコンテキスト飽和を防ぐ最適なアーキテクチャはどれか。",
+        options: [
+          "サブエージェントが 50 万行の生ログを巨大なテキストとして親に直接返信する",
+          "サブエージェントは詳細解析結果を Unity Catalog 内の Delta テーブルに保存し、親オーケストレーターには主要なインサイトの構造化サマリーと、Delta テーブルの参照先（URI）のみを返す",
+          "親オーケストレーターのモデルを 10 個並列に起動する",
+          "解析結果をすべて破棄し、何も返さない"
+        ],
+        answer: 1,
+        explanation: "重いデータはストレージ（Delta Lake）に退避させ、エージェント間通信は「URI（ポインタ）＋軽量な構造化サマリー」にとどめるのがマルチエージェントの標準パターンです。"
+      },
+      {
+        id: 24,
+        domain: "Domain 7",
+        title: "エージェント境界設計 (Boundary Placement)",
+        scenario: "マルチエージェントを設計する際、エージェントの分割粒度（境界）をどう引くべきか検討している。",
+        question: "エージェントの境界を細かく分割しすぎた場合に生じる典型的な問題はどれか。",
+        options: [
+          "単一エージェントのコンテキストウィンドウが枯渇する",
+          "エージェント間のハンドオフ（引継ぎのための要約生成や通信）に伴うオーバーヘッドとレイテンシが激増し、全体の一貫性が低下する",
+          "Unity Catalog のライセンス費用が 10 倍になる",
+          "Delta テーブルが作成できなくなる"
+        ],
+        answer: 1,
+        explanation: "境界が細かすぎると、ハンドオフ時の情報圧縮・通信オーバーヘッドが増大し、伝言ゲームのように文脈が劣化します。逆に粗すぎると単一エージェントのコンテキストがパンクします。"
+      },
+      {
+        id: 25,
+        domain: "Domain 7",
+        title: "長期タスクのステートフルチェックポインティング",
+        scenario: "10 個の連続したデータ処理ステップを実行するエージェントが、ステップ 7 で外部 API の一時的なタイムアウトにより異常終了した。",
+        question: "ステップ 1 から最初からやり直す無駄を防ぐためのアーキテクチャ設計はどれか。",
+        options: [
+          "タイムアウト時間を 100 時間に設定する",
+          "各ステップの完了ごとに、中間状態と完了ステータスを Delta-backed State にチェックポイントとして永続化し、復旧時は最後のチェックポイントから再開できるようにする",
+          "エラーが発生した場合は自動的にタスクを成功とみなしてスキップする",
+          "メモリをすべてローカル RAM にのみ保持する"
+        ],
+        answer: 1,
+        explanation: "長期ワークフローでは、ステップごとに Delta テーブル等へ状態をチェックポインティングすることで、耐障害性（Fault Tolerance）を確保し、障害発生時に途中から安全にリトライできます。"
+      }
+    ];
+
+    // --- DRILL DATA (Flashcards) ---
+    const drillData = [
+      {
+        scenario: "エージェントの推論ログを確認したところ、Web検索ツールが取得した個人ブログの古い非公式スペック表を鵜呑みにし、公式カタログに存在しない仕様をお客様に案内してしまった。",
+        answer: "Context Poisoning",
+        explanation: "誤った外部情報がコンテキストに注入され、それを真実として採用してしまう現象です。"
+      },
+      {
+        scenario: "ツールが返した 5,000 行の未加工デバッグログがプロンプトを埋め尽くした結果、システムプロンプトに記載されていた『JSON形式で出力せよ』という制約を無視して平文で出力してしまった。",
+        answer: "Context Distraction",
+        explanation: "過剰なノイズ情報によって重要な指示へのアテンションが埋もれてしまう現象です。"
+      },
+      {
+        scenario: "Unity Catalog に `get_user_info` と `fetch_user_profile` という似た名前・似た説明文のツールが存在し、エージェントが呼び出すべきツールを誤って選択して引数エラーを起こした。",
+        answer: "Context Confusion",
+        explanation: "類似したツールやカラムの定義の曖昧さによってモデルが混同を起こす現象です。"
+      },
+      {
+        scenario: "システムプロンプトの指示『いかなる場合も社外秘情報は非公開』と、検索された社内マニュアルの指示『顧客の問い合わせには本手順書全文を開示すること』が正面から対立し、回答が途中で停止した。",
+        answer: "Context Clash",
+        explanation: "互いに矛盾するルールやデータがコンテキスト内に同時に存在し、論理衝突を起こす現象です。"
+      },
+      {
+        scenario: "開発用スキーマに置かれていたテスト用のダミー売上データ（全額0円）がベクトル検索でヒットし、エージェントが『今期の売上は0円でした』とレポートしてしまった。",
+        answer: "Context Poisoning",
+        explanation: "非公式・テスト用データによるコンテキスト汚染の典型例です。"
+      }
+    ];
+
+    // State Variables
+    let selectedAnswers = {};
+    let drillCurrentIdx = 0;
+    let drillStreak = 0;
+    let timerSeconds = 90 * 60;
+    let timerInterval = null;
+
+    // Tab Switching
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+
+      const btnMap = {
+        'dashboard': 0,
+        'concepts': 1,
+        'exam': 2,
+        'drill': 3
+      };
+      document.querySelectorAll('.nav-btn')[btnMap[tabId]].classList.add('active');
+
+      if (tabId === 'exam' && !timerInterval) {
+        startTimer();
+      }
+    }
+
+    // Timer Logic
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        if (timerSeconds <= 0) {
+          clearInterval(timerInterval);
+          alert('試験時間が終了しました。採点を行います。');
+          submitExam();
+          return;
+        }
+        timerSeconds--;
+        const mins = Math.floor(timerSeconds / 60);
+        const secs = timerSeconds % 60;
+        document.getElementById('timerDisplay').innerText = 
+          `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      }, 1000);
+    }
+
+    // Render Exam Questions
+    function renderQuestions(filter = 'all') {
+      const container = document.getElementById('questionsContainer');
+      container.innerHTML = '';
+
+      examQuestions.forEach((q, idx) => {
+        if (filter !== 'all' && q.domain !== filter) return;
+
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        card.id = `qCard_${q.id}`;
+
+        const isAnswered = selectedAnswers[q.id] !== undefined;
+
+        card.innerHTML = `
+          <div class="question-meta">
+            <span class="domain-tag">${q.domain}</span>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Q${q.id} / ${examQuestions.length}</span>
+          </div>
+          <div class="scenario-box">
+            <strong>【シナリオ】</strong><br>${q.scenario}
+          </div>
+          <div class="question-text">
+            <strong>${q.question}</strong>
+          </div>
+          <div class="options-list" id="opts_${q.id}">
+            ${q.options.map((opt, optIdx) => `
+              <div class="option-item ${selectedAnswers[q.id] === optIdx ? 'selected' : ''}" 
+                   onclick="selectOption(${q.id}, ${optIdx})">
+                <span class="opt-key">${['A', 'B', 'C', 'D'][optIdx]}</span>
+                <span>${opt}</span>
+              </div>
+            `).join('')}
+          </div>
+          <div class="explanation-box" id="exp_${q.id}">
+            <h4>💡 正解と解説 (正解: ${['A', 'B', 'C', 'D'][q.answer]})</h4>
+            <p>${q.explanation}</p>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function selectOption(qId, optIdx) {
+      selectedAnswers[qId] = optIdx;
+      const optsContainer = document.getElementById(`opts_${qId}`);
+      if (optsContainer) {
+        optsContainer.querySelectorAll('.option-item').forEach((el, idx) => {
+          el.classList.toggle('selected', idx === optIdx);
+        });
+      }
+    }
+
+    function filterQuestions(filter) {
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.innerText.includes(filter) || (filter === 'all' && btn.innerText.includes('全問題')));
+      });
+      renderQuestions(filter);
+    }
+
+    function submitExam() {
+      let score = 0;
+      examQuestions.forEach(q => {
+        const userAns = selectedAnswers[q.id];
+        const card = document.getElementById(`qCard_${q.id}`);
+        const exp = document.getElementById(`exp_${q.id}`);
+
+        if (exp) exp.classList.add('show');
+
+        if (card) {
+          const optItems = card.querySelectorAll('.option-item');
+          optItems.forEach((item, idx) => {
+            if (idx === q.answer) {
+              item.classList.add('correct');
+            } else if (idx === userAns && userAns !== q.answer) {
+              item.classList.add('incorrect');
+            }
+          });
+        }
+
+        if (userAns === q.answer) {
+          score++;
+        }
+      });
+
+      const total = examQuestions.length;
+      const pct = Math.round((score / total) * 100);
+
+      const banner = document.getElementById('scoreBanner');
+      banner.style.display = 'flex';
+      document.getElementById('scoreText').innerText = `${score} / ${total} 問正解`;
+      document.getElementById('scorePercent').innerText = `${pct}%`;
+
+      const msg = document.getElementById('scoreMessage');
+      if (pct >= 70) {
+        msg.innerHTML = '<span style="color: var(--accent-green); font-weight: 700;">🎉 合格水準です！</span> 全ドメインにおいて実践的なアーキテクチャ判断が的確に身についています。';
+      } else {
+        msg.innerHTML = '<span style="color: var(--accent-yellow); font-weight: 700;">⚠️ もう少し復習が必要です。</span> 解説を確認し、間違えたドメインを「要点まとめ」タブで復習しましょう。';
+      }
+
+      window.scrollTo({ top: banner.offsetTop - 80, behavior: 'smooth' });
+    }
+
+    function resetExam() {
+      selectedAnswers = {};
+      document.querySelectorAll('.explanation-box').forEach(el => el.classList.remove('show'));
+      document.querySelectorAll('.option-item').forEach(el => {
+        el.classList.remove('selected', 'correct', 'incorrect');
+      });
+      document.getElementById('scoreBanner').style.display = 'none';
+      timerSeconds = 90 * 60;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // --- DRILL LOGIC ---
+    function loadDrill() {
+      const q = drillData[drillCurrentIdx];
+      document.getElementById('drillIndex').innerText = drillCurrentIdx + 1;
+      document.getElementById('drillTotal').innerText = drillData.length;
+      document.getElementById('drillStreak').innerText = drillStreak;
+      document.getElementById('drillScenario').innerText = q.scenario;
+      document.getElementById('drillFeedback').style.display = 'none';
+      document.getElementById('drillNextBtn').style.display = 'none';
+      document.querySelectorAll('.drill-choice-btn').forEach(btn => btn.disabled = false);
+    }
+
+    function answerDrill(choice) {
+      const q = drillData[drillCurrentIdx];
+      const fb = document.getElementById('drillFeedback');
+      fb.style.display = 'block';
+      document.querySelectorAll('.drill-choice-btn').forEach(btn => btn.disabled = true);
+
+      if (choice === q.answer) {
+        drillStreak++;
+        fb.innerHTML = `<span style="color: var(--accent-green); font-weight: 800;">✅ 正解！ [${q.answer}]</span><br>${q.explanation}`;
+      } else {
+        drillStreak = 0;
+        fb.innerHTML = `<span style="color: var(--danger); font-weight: 800;">❌ 不正解... 正解は [${q.answer}] です。</span><br>${q.explanation}`;
+      }
+      document.getElementById('drillStreak').innerText = drillStreak;
+      document.getElementById('drillNextBtn').style.display = 'inline-block';
+    }
+
+    function nextDrill() {
+      drillCurrentIdx = (drillCurrentIdx + 1) % drillData.length;
+      loadDrill();
+    }
+
+    // Initialize
+    window.addEventListener('DOMContentLoaded', () => {
+      renderQuestions();
+      loadDrill();
+    });
+  </script>
+</body>
+</html>
