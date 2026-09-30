@@ -1,7 +1,8 @@
 # generate_all_data.py
 import json
 import os
-from build_data import guide_chapters, cheatsheets
+from build_rich_guide import RICH_GUIDE_CHAPTERS
+from build_data import cheatsheets
 from questions_d1 import D1_QUESTIONS
 from questions_d2 import D2_QUESTIONS
 from questions_d3 import D3_QUESTIONS
@@ -32,18 +33,18 @@ for idx, q in enumerate(all_70[45:]):
     practice_questions.append(q_copy)
 
 exam_data = {
-    "guideChapters": guide_chapters,
+    "guideChapters": RICH_GUIDE_CHAPTERS,
     "cheatsheets": cheatsheets,
     "mockQuestions": mock_questions,
     "practiceQuestions": practice_questions,
     "drillQuestions": DRILL_QUESTIONS
 }
 
-js_content = "/**\n * Databricks Certified Context Engineer Associate - Complete Exam Data\n * English Questions & Options, In-Depth Japanese Explanations\n */\n"
+js_content = "/**\n * Databricks Certified Context Engineer Associate - Complete Exam Data\n * English Questions & Options, In-Depth Japanese Explanations, Rich Study Guide\n */\n"
 js_content += "window.EXAM_DATA = " + json.dumps(exam_data, ensure_ascii=False, indent=2) + ";\n"
 
 output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data.js")
 with open(output_path, "w", encoding="utf-8") as f:
     f.write(js_content)
 
-print(f"Successfully generated data.js ({len(mock_questions)} mock + {len(practice_questions)} practice + {len(DRILL_QUESTIONS)} drill = {len(mock_questions) + len(practice_questions) + len(DRILL_QUESTIONS)} questions)")
+print(f"Successfully generated data.js ({len(mock_questions)} mock + {len(practice_questions)} practice + {len(DRILL_QUESTIONS)} drill = {len(mock_questions) + len(practice_questions) + len(DRILL_QUESTIONS)} questions, {len(RICH_GUIDE_CHAPTERS)} rich chapters)")
