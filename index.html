@@ -5,8 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Databricks Certified Context Engineer Associate 対策ポータル</title>
   <meta name="description" content="Databricks Certified Context Engineer Associate 試験対策・本番形式英語模擬問題70問・詳細日本語解説・体系ガイド・直前暗記チートシート完全収録プラットフォーム">
-  <link rel="stylesheet" href="style.css?v=2">
+  <meta name="theme-color" content="#0a0e17">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ContextEngineer">
+  <link rel="stylesheet" href="style.css?v=3">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23ff3621'/><text x='50%' y='55%' dominant-baseline='central' text-anchor='middle' font-size='60'>⚡</text></svg>">
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 </head>
 <body>
@@ -24,19 +30,23 @@
     <!-- Mode Nav Tabs -->
     <nav class="nav-tabs" aria-label="Main Navigation">
       <button class="tab-btn" id="tabBtn_guide" onclick="switchTab('guide')">
-        <span>📚 冒頭の基礎知識・体系ガイド</span>
+        <span class="tab-label-full">📚 冒頭の基礎知識・体系ガイド</span>
+        <span class="tab-label-short">📚 ガイド</span>
         <span class="tab-badge">全8章</span>
       </button>
       <button class="tab-btn active" id="tabBtn_quiz" onclick="switchTab('quiz')">
-        <span>🎯 4択演習クイズ</span>
+        <span class="tab-label-full">🎯 4択演習クイズ</span>
+        <span class="tab-label-short">🎯 クイズ</span>
         <span class="tab-badge" id="quizCountBadge">70問</span>
       </button>
       <button class="tab-btn" id="tabBtn_cheatsheet" onclick="switchTab('cheatsheet')">
-        <span>⚡ 直前暗記シート</span>
+        <span class="tab-label-full">⚡ 直前暗記シート</span>
+        <span class="tab-label-short">⚡ 暗記シート</span>
         <span class="tab-badge">4表</span>
       </button>
       <button class="tab-btn" id="tabBtn_drill" onclick="switchTab('drill')">
-        <span>⚡ 4大障害ドリル</span>
+        <span class="tab-label-full">⚡ 4大障害ドリル</span>
+        <span class="tab-label-short">⚡ 4大ドリル</span>
         <span class="tab-badge">10問</span>
       </button>
     </nav>
