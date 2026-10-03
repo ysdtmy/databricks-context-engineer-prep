@@ -222,6 +222,19 @@ cheatsheets = [
             ["Recall First, Precision Second", "要約による重要情報の欠落防止", "制約・除外条件・確定IDを100%保持してから装飾語を削減", "下流タスクでの前提崩壊を完全に防止"],
             ["Agent Skills Packaging", "めったに使われない専門知識の外部化", "オンデマンドで読み込めるスクリプトやUC関数として定義", "システムプロンプトの肥大化と保守コストを抑制"]
         ]
+    },
+    {
+        "id": "cs-semantic",
+        "title": "Databricks セマンティック整備 & Metric Views 徹底攻略表",
+        "category": "Domain 2: セマンティック & Genie",
+        "headers": ["セマンティック層", "Unity Catalog 実装手法", "Genie / Agent への効用", "アンチパターン・注意点"],
+        "rows": [
+            ["第1層: データ基盤・結合", "INFORMATIONAL PK / FK 制約 (NOT ENFORCED)", "結合グラフを自動導出し、誤ったJOINや直積を根絶", "LakehouseではENFORCEDにできないため物理検証はパイプライン側で行う"],
+            ["第2層: メタデータ注釈", "COMMENT ON TABLE / COLUMN, Certification, Tags", "コード値('A'=有効)やビジネス略語の事前理解", "指示テキストにカラム一覧を手動コピペして二重管理にする"],
+            ["第3層: メトリクスビュー", "Unity Catalog Metric Views (YAML 1.1: measures / fields / synonyms / filter)", "公式指標を全社一元化し Metric Drift を防止。自然言語のゆらぎを同義語で吸収", "プロンプトに50行のSQL集計式を直書きする（LLMの計算ミス多発）"],
+            ["第4層: 信頼できる資産", "Trusted Assets (Certified Views, SQL UDF, パラメータ化クエリ)", "複雑な多段階計算(MRR, 解約率等)を確定的実行", "未検証のドラフトビューやアドホックSQLに依存させる"],
+            ["第5層: Genie スペース", "Curated Dataset (5〜10テーブル), Instructions, 厳選Sample Qs, Fix it ループ", "スコープ限定による注意散漫防止と継続的精度改善", "全80テーブルを一括登録する、定型質問を100個登録する"]
+        ]
     }
 ]
 

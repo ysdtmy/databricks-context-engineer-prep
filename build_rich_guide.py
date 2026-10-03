@@ -25,7 +25,7 @@ RICH_GUIDE_CHAPTERS = [
 <div class="table-container"><table class="guide-table">
 <thead><tr><th>ドメイン</th><th>配点比率</th><th>出題数目安</th><th>出題の核心論点</th></tr></thead><tbody>
 <tr><td><strong>Domain 1: Foundations of Context Engineering</strong></td><td>20%</td><td>約9問</td><td>コンテキスト4大障害（Poisoning, Distraction, Confusion, Clash）、推論モード、アテンションバジェット、Databricks スタック選定</td></tr>
-<tr><td><strong>Domain 2: System Prompt & Instruction Design</strong></td><td>15%</td><td>約7問</td><td>AI/BI Genie スペースのキュレーション、Trusted Assets（View/UDF）、Few-shot選定（Marginal Contribution）、構造化出力（JSON Schema）</td></tr>
+<tr><td><strong>Domain 2: System Prompt & Instruction Design</strong></td><td>15%</td><td>約7問</td><td>AI/BI Genie スペースのキュレーション、セマンティックレイヤー（Metric Views）、Trusted Assets（View/UDF）、Few-shot選定（Marginal Contribution）、構造化出力（JSON Schema）</td></tr>
 <tr><td><strong>Domain 3: Knowledge Retrieval & Governance</strong></td><td>15%</td><td>約7問</td><td>Unity Catalog ガバナンス（Row/Column Masking）、AI Search、チャンキング戦略、Pre-inference vs JIT 検索、MLflow Eval</td></tr>
 <tr><td><strong>Domain 4: Memory Architecture with Lakebase</strong></td><td>15%</td><td>約7問</td><td>Lakebase / Delta-backed State、In-context Scratchpad、意図解決（Intent Resolution）、構造化クエリ vs ベクトル検索、Over-retrieval</td></tr>
 <tr><td><strong>Domain 5: Tool & Action Design with MCP</strong></td><td>15%</td><td>約7問</td><td>Model Context Protocol (MCP)、Progressive Disclosure、中間生出力プルーニング、Agent Skills、冪等性・副作用管理</td></tr>
@@ -36,7 +36,7 @@ RICH_GUIDE_CHAPTERS = [
 <h3 class="guide-h3">本番試験を突破するための「3大解法テクニック」</h3>
 <ul class="guide-list">
 <li><strong>1. プロンプトでの精神論を疑う（ガバナンスとコードの優先）</strong>:
-選択肢に「プロンプトに『絶対に〜するな』と強く念押しする」「プロンプトを長文化する」とあるものは、ほぼ確実に誤答（Distractor）です。Databricks では **Unity Catalog の権限モデル、タグ、Trusted Assets、JSON Schema による物理的・決定論的制御** が常に正解になります。</li>
+選択肢に「プロンプトに『絶対に〜するな』と強く念押しする」「プロンプトを長文化する」とあるものは、ほぼ確実に誤答（Distractor）です。Databricks では **Unity Catalog の権限モデル、タグ、Metric Views、Trusted Assets、JSON Schema による物理的・決定論的制御** が常に正解になります。</li>
 <li><strong>2. 確定キー vs 意味的探索の峻別</strong>:
 CustomerID や OrderID などの一意な識別子を検索する際、「ベクトル類似度検索（Vector Search）」とある選択肢はアンチパターンです。一意キーには必ず「構造化クエリ（Structured SQL / Key-Value Lookup）」を選択してください。</li>
 <li><strong>3. トークン節約の鉄則（Progressive Disclosure & Pruning）</strong>:
@@ -124,48 +124,210 @@ CustomerID や OrderID などの一意な識別子を検索する際、「ベク
     },
     {
         "id": "ch-domain2",
-        "title": "3. Domain 2: システムプロンプト設計 & AI/BI Genie (15%)",
+        "title": "3. Domain 2: プロンプト設計 & AI/BI Genie・セマンティックレイヤー (15%)",
         "content": """
-<p class="guide-p">プロンプトを長文化させてLLMに無理をさせるのではなく、Databricks のデータ資産（AI/BI Genie, Unity Catalog）と協調させる設計が問われます。</p>
+<p class="guide-p">プロンプトを長文化させてLLMに無理な推論を強いるのではなく、Databricks のデータ資産（Unity Catalog、Metric Views、AI/BI Genie）を活用して<strong>セマンティック（意味論）を物理的・決定論的に確立・統制する設計</strong>が本ドメインの最大の核心です。</p>
 
-<h3 class="guide-h3">AI/BI Genie スペースのキュレーション原則</h3>
-<p class="guide-p">Databricks AI/BI Genie は、ビジネスユーザーが自然言語でデータ分析を行うための基盤です。高精度な Genie Space を構築するための必須コンポーネント：</p>
+<h3 class="guide-h3">なぜ Databricks に「セマンティック整備（Semantic Preparation）」が不可欠なのか？</h3>
+<p class="guide-p">AI/BI Genie や自律エージェントに未加工の生テーブル（Bronze / Silver 層）をそのまま提示すると、次のようなコンテキスト崩壊が必然的に発生します：</p>
+<ul class="guide-list">
+  <li><strong>集計ロジックの不一致（Metric Drift）</strong>: ユーザーが「今月の売上は？」と質問した際、LLM が <code>SUM(sales)</code> を計算するのか、値引きや返品を差し引いた <code>SUM(amount - discount - refund)</code> を計算するのかが都度ブレてしまい、ダッシュボードと回答の数値が乖離する。</li>
+  <li><strong>結合事故とファンアウト（Context Confusion）</strong>: テーブル間のリレーションシップが定義されていないため、LLM が誤った外部キーで多対多結合を行い、レコード数が数百万件に爆発して誤った数値を生成する。</li>
+  <li><strong>アテンション散漫（Context Distraction）</strong>: 1つのテーブルに存在する100個以上のカラム定義をすべてプロンプトに流し込み、重要なビジネス制約を見落とす。</li>
+  <li><strong>プロンプト精神論の破綻</strong>: プロンプトに「MRRとは〜で、キャンセル注文は除外し〜」と50行の計算ルールを自然言語で書き連ねても、LLM は確率的に条件を失念する。</li>
+</ul>
+
+<div class="mermaid-card"><div class="mermaid-header"><span>📊 Unity Catalog 一元管理型セマンティックレイヤー・アーキテクチャ</span></div>
+<pre class="mermaid">flowchart TD
+    subgraph DataFoundation["1. データ基盤 & リレーションシップ層"]
+        Delta["Gold Layer Delta Tables<br/>(クレンジング済み厳選テーブル)"]
+        PKFK["Informational PK / FK 制約<br/>(結合グラフを決定論的に定義)"]
+        Comments["Table & Column Comments<br/>(コード値・単位・ビジネス注釈)"]
+    end
+
+    subgraph SemanticLayer["2. セマンティックレイヤー (Unity Catalog)"]
+        MV["📐 Unity Catalog Metric Views<br/>(YAMLベースの宣言型メジャー/ディメンション/同義語)"]
+        TA["🛡️ Trusted Assets<br/>(認定集計View, SQL UDF, パラメータ化クエリ)"]
+    end
+
+    subgraph GenieSpace["3. AI/BI Genie Space (キュレーション空間)"]
+        Curated["Curated Dataset<br/>(厳選5〜10テーブル)"]
+        Instructions["Genie Instructions<br/>(会計年度, デフォルト除外方針)"]
+        SampleQ["Sample Questions<br/>(5〜15問の厳選ゴールデンQA)"]
+        Ontology["Genie Ontology<br/>(自動推論されたビジネス文脈)"]
+    end
+
+    subgraph Consumers["4. 統合コンシューマー (Single Source of Truth)"]
+        GenieAgent["🤖 AI/BI Genie (自然言語対話)"]
+        Dashboards["📊 AI/BI Dashboards (公式レポート)"]
+        DBSQL["💻 Databricks SQL / ノートブック"]
+        CustomAgent["🦾 外部カスタムAIエージェント (MCP連携)"]
+    end
+
+    DataFoundation --> SemanticLayer
+    SemanticLayer --> GenieSpace
+    GenieSpace --> Consumers
+    SemanticLayer -.-> Dashboards
+    SemanticLayer -.-> DBSQL
+    SemanticLayer -.-> CustomAgent
+</pre></div>
+
+<h3 class="guide-h3">セマンティック整備の 5 段階ピラミッド</h3>
 <div class="table-container"><table class="guide-table">
-<thead><tr><th>コンポーネント</th><th>役割とベストプラクティス</th><th>アンチパターン（試験の引っ掛け）</th></tr></thead><tbody>
+<thead><tr><th>階層</th><th>構成要素</th><th>Databricks 実装手法</th><th>エージェント / Genie に対する効果</th></tr></thead><tbody>
 <tr>
-  <td><strong>Trusted Assets<br>（信頼できる資産）</strong></td>
-  <td>複雑なビジネス計算（MRR、解約率、営業利益など）は、LLMに毎回アドホックな SQL を書かせるのではなく、Unity Catalog 上で検証済みの <strong>View（集計ビュー）や SQL UDF、パラメータ化クエリ</strong> を作成して登録する。</td>
-  <td>プロンプト（Instructions）に 50 行の複雑な SQL 計算ロジックをテキストで書き連ねる（トークン浪費＆ミス誘発）。</td>
+  <td><strong>第1層: データ基盤</strong></td>
+  <td>Gold層集約 & リレーションシップ</td>
+  <td>INFORMATIONAL PK / FK 制約（<code>NOT ENFORCED</code>）</td>
+  <td>テーブル間の結合パス（Join Path）を決定論的に理解させ、誤結合やカーテシアン積を根絶する。</td>
 </tr>
 <tr>
-  <td><strong>Instructions<br>（スペース指示）</strong></td>
-  <td>組織固有のビジネス用語（「今期とは 2026 年度を指す」など）や、デフォルトのフィルタ条件（「特に指定のない限りキャンセル済注文は除外」）を簡潔に定義する。</td>
-  <td>すべてのテーブル定義やカラム型を指示テキストの中に手作業でコピー＆ペーストする。</td>
+  <td><strong>第2層: メタデータ注釈</strong></td>
+  <td>カタログコメント & タグ</td>
+  <td><code>COMMENT ON TABLE / COLUMN</code>、Certification（認定）</td>
+  <td>ステータスコード値（'A'=有効, 'S'=停止）や略語の意味をコンテキストとして直接供給する。</td>
 </tr>
 <tr>
-  <td><strong>Sample Questions<br>（サンプル質問）</strong></td>
-  <td>主要な KPI や代表的な分析クエリに対応する模範的な質問表現を <strong>5〜15問厳選</strong> して登録する。</td>
-  <td>類似した定型質問を 100 個以上大量登録する（内部検索を混乱させトークンを圧迫）。</td>
+  <td><strong>第3層: メトリクスビュー</strong></td>
+  <td>宣言型セマンティックレイヤー</td>
+  <td><strong>Unity Catalog Metric Views（YAML仕様 1.1）</strong></td>
+  <td>メジャー（指標計算）、ディメンション（分析軸）、同義語（Synonyms）を全社一元化し Metric Drift を防止。</td>
 </tr>
 <tr>
-  <td><strong>Catalog Annotations<br>（メタデータ注釈）</strong></td>
-  <td>テーブルコメント（<code>COMMENT ON TABLE</code>）およびカラムコメント（<code>COMMENT ON COLUMN</code>）にコード値の意味（<code>status: 'A'=Active, 'S'=Suspended</code>）を明記する。</td>
-  <td>カラム名を <code>status_a_active_s_suspended</code> のように極端にリネームする。</td>
+  <td><strong>第4層: 信頼できる資産</strong></td>
+  <td>Trusted Assets</td>
+  <td>集計ビュー（View）、SQL UDF、パラメータ化クエリ</td>
+  <td>複雑な多段階ビジネス計算（MRR、LTV等）を LLM のアドホック SQL 生成に任せず、確定実行させる。</td>
+</tr>
+<tr>
+  <td><strong>第5層: スペース調整</strong></td>
+  <td>Genie キュレーション & ループ</td>
+  <td>Instructions、Sample Questions、Fix it フィードバック</td>
+  <td>組織固有ルール（会計期間、除外方針）の伝達と、ユーザーの利用フィードバックによる継続的チューニング。</td>
 </tr>
 </tbody></table></div>
 
-<div class="code-block"><div class="code-header"><span>SQL: Unity Catalog Trusted Asset の定義例</span><button class="copy-btn" onclick="copyCode(this)">コピー</button></div><pre><code class="language-sql">-- MRR 計算の正規ロジックを集計ビューとして Unity Catalog に定義
-CREATE OR REPLACE VIEW finance_prod.metrics.v_monthly_recurring_revenue
-COMMENT 'Authoritative Net MRR metrics with discounts and currency conversions accounted'
-AS SELECT 
-    DATE_TRUNC('month', billing_date) AS billing_month,
-    customer_tier,
-    SUM(gross_amount * fx_rate - discount_amount) AS net_mrr
-FROM finance_prod.core.invoices
-WHERE invoice_status = 'SETTLED'
-GROUP BY 1, 2;
+<h3 class="guide-h3">Unity Catalog Metric Views（メトリクスビュー）完全詳解</h3>
+<p class="guide-p">Metric Views は、Unity Catalog 上にファーストクラスのセキュリティ保護対象オブジェクトとして登録される<strong>宣言型のセマンティックレイヤー</strong>です。従来の BI ツール（Looker の LookML や Tableau データモデル）に閉じ込められていたビジネス定義を、データプラットフォームの中心（Unity Catalog）へ解放します。</p>
 
--- これを Genie Space の「Trusted Asset」に追加することで、Genie はこのビューを優先的に照会する</code></pre></div>
+<div class="code-block"><div class="code-header"><span>SQL / YAML: Unity Catalog Metric View の定義構文（Version 1.1）</span><button class="copy-btn" onclick="copyCode(this)">コピー</button></div><pre><code class="language-sql">-- Unity Catalog に公式メトリクスビューを宣言型 YAML で作成
+CREATE OR REPLACE VIEW sales_prod.analytics.mv_revenue_and_orders
+WITH METRICS LANGUAGE YAML AS $$
+version: 1.1
+comment: "全社公式の受注および売上収益セマンティックビュー (AI/BI Genie & ダッシュボード共通)"
+source: sales_prod.gold.fact_orders
+
+# 1. ディメンション (分析軸・グループ化・スライス項目)
+fields:
+  - name: order_date
+    expression: order_timestamp::DATE
+    display_name: "注文日"
+  - name: order_year
+    expression: EXTRACT(YEAR FROM order_timestamp)
+    display_name: "注文年"
+  - name: customer_tier
+    expression: CASE WHEN total_lifetime_spend > 500000 THEN 'Enterprise' ELSE 'Standard' END
+    display_name: "顧客ティア"
+    comment: "累積利用額に基づく顧客重要度分類"
+
+# 2. メジャー (集計指標・ビジネス計算ロジック)
+measures:
+  - name: net_revenue
+    expr: SUM(order_amount - discount_amount)
+    display_name: "純売上高 (Net Revenue)"
+    comment: "値引き適用後の確定売上高。キャンセル・返品注文は除外済"
+    # Agent Metadata: Genieが自然言語のゆらぎを解釈するための同義語 (最大10個)
+    synonyms: ["売上", "収益", "sales", "revenue", "純売上", "入金額"]
+    format: "$#,##0.00"
+
+  - name: order_count
+    expr: COUNT(DISTINCT order_id)
+    display_name: "総受注件数"
+    comment: "一意な注文番号のカウント"
+    synonyms: ["注文件数", "オーダー数", "number of orders", "件数"]
+    format: "#,##0"
+
+# 3. リレーションシップ (スタースキーマ / スノーフレーク結合)
+joins:
+  - name: dim_customer
+    source: sales_prod.gold.dim_customers
+    on: source.customer_id = dim_customer.customer_id
+
+# 4. グローバルフィルタ (除外条件の一貫適用)
+filter: order_status != 'CANCELLED'
+$$;
+</code></pre></div>
+
+<h4 class="guide-h4">Metric View YAML の重要キーと役割</h4>
+<ul class="guide-list">
+  <li><strong><code>version: 1.1</code></strong>: Agent Metadata（<code>synonyms</code> や <code>display_name</code>）を完全サポートする仕様バージョン。</li>
+  <li><strong><code>source</code></strong>: メトリクスビューが参照する基盤の Gold 層テーブルまたはビュー。</li>
+  <li><strong><code>fields</code> (Dimensions)</strong>: <code>EXTRACT</code>、<code>CASE WHEN</code>、型キャストなどの SQL 式を用いて導出される分析軸。</li>
+  <li><strong><code>measures</code> (Metrics)</strong>: <code>SUM</code>、<code>COUNT DISTINCT</code>、<code>AVG</code> などの集計関数を用いた公式計算ロジック。</li>
+  <li><strong><code>synonyms</code> (同義語)</strong>: <strong>Genie やエージェントの自然言語認識精度を高める最重要プロパティ</strong>。ビジネスユーザーが「売上高」「収益」「Sales」「入金額」のどの言葉で質問しても、自動的に <code>net_revenue</code> メジャーにマッピングされます。</li>
+  <li><strong><code>joins</code></strong>: テーブル間の結合キーと参照先を宣言。Genie が適切なディメンション結合を構築するための基盤となります。</li>
+  <li><strong><code>filter</code></strong>: 「キャンセル済み注文は除外する」などの全社基本ルールをグローバルに強制。LLM が WHERE 句を書き忘れる事故を根絶します。</li>
+</ul>
+
+<h3 class="guide-h3">リレーションシップと Informational PK / FK 制約の役割</h3>
+<p class="guide-p">レイクハウス（Delta Lake）では、リレーショナル DB のような厳格な主キー制約の強制（Enforcement）は書き込みパフォーマンス維持のため行いません。しかし、Unity Catalog では <strong>Informational PK/FK（<code>NOT ENFORCED</code>）</strong> を定義することが強く推奨されます。</p>
+
+<div class="code-block"><div class="code-header"><span>SQL: Informational PK / FK 制約の定義</span><button class="copy-btn" onclick="copyCode(this)">コピー</button></div><pre><code class="language-sql">-- 主キーの定義 (NOT ENFORCED)
+ALTER TABLE sales_prod.gold.dim_customers 
+  ADD CONSTRAINT pk_dim_customers PRIMARY KEY (customer_id) NOT ENFORCED;
+
+-- 外部キーの定義 (NOT ENFORCED)
+ALTER TABLE sales_prod.gold.fact_orders 
+  ADD CONSTRAINT fk_orders_to_customers 
+  FOREIGN KEY (customer_id) REFERENCES sales_prod.gold.dim_customers(customer_id) NOT ENFORCED;
+</code></pre></div>
+<ul class="guide-list">
+  <li><strong>Genie に対する効果</strong>: Genie は Unity Catalog の制約メタデータを読み取ってテーブル間の結合グラフ（Entity-Relationship Graph）を自動構築します。これにより、外部キーの同名異義や結合キーの当て推量を完全に防止します。</li>
+  <li><strong>クエリオプティマイザへの効果</strong>: Databricks Photon エンジンは Informational 制約を活用して不要な JOIN を除去（Join Elimination）し、クエリを高速化します。</li>
+</ul>
+
+<h3 class="guide-h3">AI/BI Genie Space のキュレーション原則（運用とチューニング）</h3>
+<div class="table-container"><table class="guide-table">
+<thead><tr><th>キュレーション項目</th><th>推奨ベストプラクティス</th><th>アンチパターン（試験の代表的誤答）</th></tr></thead><tbody>
+<tr>
+  <td><strong>テーブル数の絞り込み<br>（Curated Dataset）</strong></td>
+  <td>1つの Genie Space に登録するテーブル数は <strong>5〜10 個の Gold / Metric Views</strong> に厳選する。</td>
+  <td>スキーマ内の Bronze / Silver を含む全 80 テーブルをすべて Genie Space に追加する（Context Distraction による大混乱）。</td>
+</tr>
+<tr>
+  <td><strong>Trusted Assets<br>（信頼できる資産）</strong></td>
+  <td>Metric Views、集計ビュー、SQL UDF、パラメータ化クエリを登録し、Unity Catalog で「Certified（認定）」を付与する。</td>
+  <td>プロンプト（Instructions）の中に 50 行の複雑な SQL 文を手動で書き連ねる（トークン浪費＆文法エラー誘発）。</td>
+</tr>
+<tr>
+  <td><strong>Instructions<br>（スペース指示）</strong></td>
+  <td>組織特有の前提条件（例: 「会計年度は4月開始」「今期は2026年度を指す」「通貨は日本円換算」）を簡潔に記述する。</td>
+  <td>テーブルのカラム名一覧やデータ型をそのまま Instructions にコピー＆ペーストする（メタデータと二重管理になり衝突の原因）。</td>
+</tr>
+<tr>
+  <td><strong>Sample Questions<br>（サンプル質問）</strong></td>
+  <td>代表的な KPI、複雑なフィルタ条件、エッジケースを含む質問を <strong>5〜15問厳選</strong> して登録する。</td>
+  <td>「先月の売上」「先々月の売上」のような類似した定型質問を 100 個以上登録する（内部ベクトルの衝突を招く）。</td>
+</tr>
+<tr>
+  <td><strong>反復改善ループ<br>（Curator Loop）</strong></td>
+  <td>ユーザーの会話ログ、👍/👎評価、<strong>「Fix it（修正）」機能</strong> を定期レビューし、不足している同義語や指示を順次補正する。</td>
+  <td>Genie Space を一度公開したら放置し、精度低下時にモデル全体の再ファインチューニングを検討する。</td>
+</tr>
+</tbody></table></div>
+
+<div class="code-block"><div class="code-header"><span>SQL: Unity Catalog Trusted Asset (SQL UDF) の定義例</span><button class="copy-btn" onclick="copyCode(this)">コピー</button></div><pre><code class="language-sql">-- 複雑な法人顧客の解約リスクスコア計算を SQL UDF (Trusted Asset) としてカプセル化
+CREATE OR REPLACE FUNCTION sales_prod.analytics.calc_churn_risk(
+    last_login_days INT,
+    ticket_count INT,
+    contract_mrr DOUBLE
+)
+RETURNS DOUBLE
+COMMENT 'Authoritative churn risk calculation logic approved by CRO'
+RETURN (last_login_days * 0.4) + (ticket_count * 5.0) - (LOG10(GREATEST(contract_mrr, 1.0)) * 2.0);
+
+-- これを Genie Space の Trusted Asset に登録することで、Genie は独自計算せずこの UDF を正確に呼ぶ
+</code></pre></div>
 
 <h3 class="guide-h3">Few-shot サンプルの選定原則「Marginal Contribution」</h3>
 <ul class="guide-list">

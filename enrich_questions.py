@@ -11,6 +11,7 @@ from questions_d3 import D3_QUESTIONS
 from questions_d4 import D4_QUESTIONS
 from questions_d567 import D567_QUESTIONS
 from questions_drill import DRILL_QUESTIONS
+from questions_missed import MISSED_QUESTIONS
 from build_rich_guide import RICH_GUIDE_CHAPTERS
 from build_data import cheatsheets
 
@@ -149,7 +150,8 @@ exam_data = {
     "cheatsheets": cheatsheets,
     "mockQuestions": mock_questions,
     "practiceQuestions": practice_questions,
-    "drillQuestions": DRILL_QUESTIONS
+    "drillQuestions": DRILL_QUESTIONS,
+    "reviewQuestions": MISSED_QUESTIONS
 }
 
 js_content = "/**\n * Databricks Certified Context Engineer Associate - Complete Exam Data\n * English Questions & Options, In-Depth Japanese Explanations, Rich Study Guide\n */\n"

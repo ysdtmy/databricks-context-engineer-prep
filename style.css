@@ -565,6 +565,17 @@ a:hover {
   background: rgba(16, 185, 129, 0.08) !important;
 }
 
+.option-btn.selected-pending {
+  background: rgba(56, 189, 248, 0.12) !important;
+  border-color: var(--accent-cyan) !important;
+  color: #38bdf8 !important;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+}
+.option-btn.selected-pending .option-key {
+  background: var(--accent-cyan);
+  color: #0b1528;
+}
+
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   20%, 60% { transform: translateX(-6px); }

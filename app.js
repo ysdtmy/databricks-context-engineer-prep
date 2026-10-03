@@ -50,7 +50,8 @@
     if (!window.EXAM_DATA) return [];
     const mocks = window.EXAM_DATA.mockQuestions || [];
     const practice = window.EXAM_DATA.practiceQuestions || [];
-    return [...mocks, ...practice];
+    const review = window.EXAM_DATA.reviewQuestions || [];
+    return [...mocks, ...practice, ...review];
   }
 
   // --- Jump to Specific Guide Section from Quiz Question ---
@@ -59,7 +60,7 @@
     const s = (domainText || '').toLowerCase();
     if (s.includes('domain 1') || s.includes('foundation') || s.includes('基礎') || s.includes('障害')) {
       targetId = 'ch-domain1';
-    } else if (s.includes('domain 2') || s.includes('prompt') || s.includes('genie')) {
+    } else if (s.includes('domain 2') || s.includes('prompt') || s.includes('genie') || s.includes('semantic') || s.includes('metric') || s.includes('セマンティック') || s.includes('メトリクス')) {
       targetId = 'ch-domain2';
     } else if (s.includes('domain 3') || s.includes('retrieval') || s.includes('search') || s.includes('検索')) {
       targetId = 'ch-domain3';
@@ -182,6 +183,13 @@
     if (elFill) elFill.style.width = `${progressPct}%`;
     if (elProg) elProg.textContent = `${progressPct}% (${answered}/${total}問)`;
     if (elBadge) elBadge.textContent = `${total}問`;
+
+    const elAllFilter = document.querySelector('button[data-filter="all"]');
+    if (elAllFilter) elAllFilter.textContent = `すべて (全${total}問)`;
+
+    const elReviewFilter = document.querySelector('button[data-filter="review"]');
+    const reviewCount = (window.EXAM_DATA && window.EXAM_DATA.reviewQuestions) ? window.EXAM_DATA.reviewQuestions.length : 0;
+    if (elReviewFilter) elReviewFilter.textContent = `📝 模試復習 (${reviewCount}問)`;
   }
 
   // --- Bookmark Toggle ---
@@ -206,18 +214,79 @@
     const q = all.find(item => item.id === qId);
     if (!q) return;
 
-    const isCorrect = (optionKey === q.correct);
-    state.answers[qId] = {
-      selectedKey: optionKey,
-      isCorrect: isCorrect,
-      timestamp: Date.now()
-    };
-    saveState();
-    updateDashboardStats();
-
+    const isMulti = Array.isArray(q.correct);
     const card = document.getElementById(`card-${qId}`);
-    if (card) {
-      updateCardDOM(card, q, optionKey, isCorrect);
+
+    if (!isMulti) {
+      // Single selection
+      const isCorrect = (optionKey === q.correct);
+      state.answers[qId] = {
+        selectedKey: optionKey,
+        selectedKeys: [optionKey],
+        isCorrect: isCorrect,
+        timestamp: Date.now()
+      };
+      saveState();
+      updateDashboardStats();
+      if (card) {
+        updateCardDOM(card, q, [optionKey], isCorrect);
+      }
+    } else {
+      // Multi selection (e.g. Select TWO)
+      state.pending = state.pending || {};
+      let current = state.pending[qId] || [];
+      if (current.includes(optionKey)) {
+        current = current.filter(k => k !== optionKey);
+      } else {
+        current = [...current, optionKey];
+      }
+      state.pending[qId] = current;
+
+      const requiredCount = q.correctCount || q.correct.length || 2;
+
+      if (current.length < requiredCount) {
+        // Still selecting
+        if (card) {
+          const optButtons = card.querySelectorAll('.option-btn');
+          optButtons.forEach(btn => {
+            const keySpan = btn.querySelector('.option-key');
+            if (!keySpan) return;
+            const k = keySpan.textContent.trim();
+            if (current.includes(k)) {
+              btn.classList.add('selected-pending');
+            } else {
+              btn.classList.remove('selected-pending');
+            }
+          });
+          let label = card.querySelector('.answer-feedback-label');
+          if (!label) {
+            label = document.createElement('span');
+            label.className = 'answer-feedback-label';
+            label.style.fontSize = '0.85rem';
+            label.style.fontWeight = '700';
+            const actionRow = card.querySelector('.toggle-exp-btn').parentNode;
+            if (actionRow) actionRow.appendChild(label);
+          }
+          label.style.color = 'var(--accent-cyan)';
+          label.textContent = `💡 あと ${requiredCount - current.length} つ選択してください (${current.length}/${requiredCount})`;
+        }
+      } else {
+        // Required count reached - evaluate!
+        const correctList = q.correct;
+        const isCorrect = (current.length === correctList.length) && correctList.every(k => current.includes(k));
+        state.answers[qId] = {
+          selectedKey: current.sort().join(', '),
+          selectedKeys: current,
+          isCorrect: isCorrect,
+          timestamp: Date.now()
+        };
+        delete state.pending[qId];
+        saveState();
+        updateDashboardStats();
+        if (card) {
+          updateCardDOM(card, q, current, isCorrect);
+        }
+      }
     }
   };
 
@@ -268,6 +337,7 @@
       // 1. Tab filter
       if (filter === 'mock' && q.type !== 'mock') return false;
       if (filter === 'practice' && q.type !== 'practice') return false;
+      if (filter === 'review' && q.type !== 'review') return false;
       if (filter === 'starred' && !state.starred[q.id]) return false;
       if (filter === 'incorrect') {
         const ans = state.answers[q.id];
@@ -339,12 +409,16 @@
     }
 
     // Options HTML
+    const isMulti = Array.isArray(q.correct);
+    const correctKeys = isMulti ? q.correct : [q.correct];
+    const selectedKeys = ansState ? (ansState.selectedKeys || [ansState.selectedKey]) : [];
+
     const optionsHtml = (q.options || []).map(opt => {
       let optClass = 'option-btn';
       if (isAnswered) {
-        if (opt.key === ansState.selectedKey) {
-          optClass += ansState.isCorrect ? ' selected-correct' : ' selected-incorrect';
-        } else if (opt.key === q.correct) {
+        if (selectedKeys.includes(opt.key)) {
+          optClass += correctKeys.includes(opt.key) ? ' selected-correct' : ' selected-incorrect';
+        } else if (correctKeys.includes(opt.key)) {
           optClass += ' correct-highlight';
         }
       }
@@ -359,6 +433,7 @@
     // Explanation Content
     const showExpClass = isAnswered ? 'explanation-panel show' : 'explanation-panel';
     const toggleBtnText = isAnswered ? '解説を隠す ▲' : '解説を表示 ▼';
+    const correctDisplay = isMulti ? q.correct.join(', ') : q.correct;
 
     // Options Breakdown (Why correct, why incorrect)
     let breakdownHtml = '';
@@ -366,7 +441,7 @@
       breakdownHtml = `
         <div class="options-analysis-list">
           ${q.options.map(opt => {
-            const isCorr = opt.key === q.correct;
+            const isCorr = correctKeys.includes(opt.key);
             return `
               <div class="analysis-item ${isCorr ? 'correct-item' : ''}">
                 <strong>選択肢 ${opt.key}:</strong> ${escapeHtml(opt.verdict || opt.text)}
@@ -399,6 +474,8 @@
           <div class="card-badges">
             <span class="badge-id">${q.id}</span>
             <span class="badge-category">${escapeHtml(q.category || q.domain || '')}</span>
+            ${q.type === 'review' ? '<span class="badge-review" style="background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 9999px;">📝 模試間違え・復習</span>' : ''}
+            ${isMulti ? '<span class="badge-multiselect" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 9999px;">2つ選択 (Select TWO)</span>' : ''}
             <button class="question-guide-link" title="該当ドメインの基礎知識を読む" onclick="jumpToDomainGuide('${escapeHtml(q.domain || q.category || '')}')">📖 基礎知識を確認</button>
           </div>
           <button class="bookmark-btn ${isStarred ? 'active' : ''}" title="要復習ブックマーク" onclick="toggleBookmark('${q.id}', this)">
@@ -408,6 +485,7 @@
 
         <h3 class="question-title">${escapeHtml(displayTitle)}</h3>
         <div class="question-desc">${formattedQuestion}</div>
+        ${isMulti ? '<div style="margin-top: 0.5rem; margin-bottom: 0.5rem; font-size: 0.85rem; font-weight: 600; color: var(--accent-cyan);">👉 正解の選択肢を2つ選択してください</div>' : ''}
         ${codeHtml}
 
         <div class="options-grid">
@@ -420,7 +498,7 @@
           </button>
           ${isAnswered ? `
             <span class="answer-feedback-label" style="font-size: 0.85rem; font-weight: 700; color: ${ansState.isCorrect ? 'var(--success)' : 'var(--danger)'}">
-              ${ansState.isCorrect ? '✓ 正解！' : `✕ 不正解（正解: ${q.correct}）`}
+              ${ansState.isCorrect ? '✓ 正解！' : `✕ 不正解（正解: ${correctDisplay}）`}
             </span>
           ` : ''}
         </div>
@@ -429,7 +507,7 @@
           <div class="exp-header">
             <span>解答・詳細解説</span>
             <span class="exp-verdict-tag ${isAnswered ? (ansState.isCorrect ? 'correct' : 'incorrect') : 'correct'}">
-              正解：${q.correct}
+              正解：${correctDisplay}
             </span>
           </div>
           ${breakdownHtml}
@@ -441,8 +519,12 @@
   }
 
   // Update card in place upon answer selection
-  function updateCardDOM(card, q, selectedKey, isCorrect) {
+  function updateCardDOM(card, q, selectedKeyOrKeys, isCorrect) {
     card.className = isCorrect ? 'question-card answered-correct' : 'question-card answered-incorrect';
+
+    const selectedKeys = Array.isArray(selectedKeyOrKeys) ? selectedKeyOrKeys : [selectedKeyOrKeys];
+    const correctKeys = Array.isArray(q.correct) ? q.correct : [q.correct];
+    const correctDisplay = correctKeys.join(', ');
 
     const optButtons = card.querySelectorAll('.option-btn');
     optButtons.forEach(btn => {
@@ -450,9 +532,9 @@
       if (!keySpan) return;
       const k = keySpan.textContent.trim();
       btn.className = 'option-btn';
-      if (k === selectedKey) {
-        btn.classList.add(isCorrect ? 'selected-correct' : 'selected-incorrect');
-      } else if (k === q.correct) {
+      if (selectedKeys.includes(k)) {
+        btn.classList.add(correctKeys.includes(k) ? 'selected-correct' : 'selected-incorrect');
+      } else if (correctKeys.includes(k)) {
         btn.classList.add('correct-highlight');
       }
     });
@@ -472,7 +554,7 @@
       if (bottomRow) bottomRow.appendChild(label);
     }
     label.style.color = isCorrect ? 'var(--success)' : 'var(--danger)';
-    label.textContent = isCorrect ? '✓ 正解！' : `✕ 不正解（正解: ${q.correct}）`;
+    label.textContent = isCorrect ? '✓ 正解！' : `✕ 不正解（正解: ${correctDisplay}）`;
   }
 
   // --- Render Study Guide ---

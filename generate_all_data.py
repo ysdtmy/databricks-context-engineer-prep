@@ -9,6 +9,7 @@ from questions_d3 import D3_QUESTIONS
 from questions_d4 import D4_QUESTIONS
 from questions_d567 import D567_QUESTIONS
 from questions_drill import DRILL_QUESTIONS
+from questions_missed import MISSED_QUESTIONS
 
 # Assemble all 70 questions
 all_70 = D1_QUESTIONS + D2_QUESTIONS + D3_QUESTIONS + D4_QUESTIONS + D567_QUESTIONS
@@ -37,7 +38,8 @@ exam_data = {
     "cheatsheets": cheatsheets,
     "mockQuestions": mock_questions,
     "practiceQuestions": practice_questions,
-    "drillQuestions": DRILL_QUESTIONS
+    "drillQuestions": DRILL_QUESTIONS,
+    "reviewQuestions": MISSED_QUESTIONS
 }
 
 js_content = "/**\n * Databricks Certified Context Engineer Associate - Complete Exam Data\n * English Questions & Options, In-Depth Japanese Explanations, Rich Study Guide\n */\n"

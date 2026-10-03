@@ -37,12 +37,12 @@
       <button class="tab-btn active" id="tabBtn_quiz" onclick="switchTab('quiz')">
         <span class="tab-label-full">🎯 4択演習クイズ</span>
         <span class="tab-label-short">🎯 クイズ</span>
-        <span class="tab-badge" id="quizCountBadge">70問</span>
+        <span class="tab-badge" id="quizCountBadge">96問</span>
       </button>
       <button class="tab-btn" id="tabBtn_cheatsheet" onclick="switchTab('cheatsheet')">
         <span class="tab-label-full">⚡ 直前暗記シート</span>
         <span class="tab-label-short">⚡ 暗記シート</span>
-        <span class="tab-badge">4表</span>
+        <span class="tab-badge">5表</span>
       </button>
       <button class="tab-btn" id="tabBtn_drill" onclick="switchTab('drill')">
         <span class="tab-label-full">⚡ 4大障害ドリル</span>
@@ -70,7 +70,7 @@
         <div class="hero-badge">Databricks Certified Context Engineer Associate</div>
         <h2 class="hero-title">冒頭の基礎知識・体系的学習ガイド</h2>
         <p class="hero-subtitle">
-          公式シラバス準拠。コンテキスト4大障害、推論モード、GenieスペースとTrusted Assets、Unity Catalogガバナンス、RAGチャンキング、Lakebase永続メモリ、MCP Progressive Disclosure、Recall Firstコンパクション、マルチエージェント協調など、合格に必要なアーキテクチャ要点を網羅。
+          公式シラバス準拠。コンテキスト4大障害、推論モード、Genieスペース・セマンティックレイヤー（Metric Views）とTrusted Assets、Unity Catalogガバナンス、RAGチャンキング、Lakebase永続メモリ、MCP Progressive Disclosure、Recall Firstコンパクション、マルチエージェント協調など、合格に必要なアーキテクチャ要点を網羅。
         </p>
 
         <div class="hero-metrics-grid">
@@ -97,8 +97,8 @@
         </div>
 
         <div class="hero-actions">
-          <button class="hero-btn primary-cta" onclick="switchTab('quiz')">🎯 演習クイズ（全70問）に挑戦する →</button>
-          <button class="hero-btn secondary-cta" onclick="switchTab('cheatsheet')">⚡ 直前暗記シート（4大比較表）を見る</button>
+          <button class="hero-btn primary-cta" onclick="switchTab('quiz')">🎯 演習クイズ（全96問）に挑戦する →</button>
+          <button class="hero-btn secondary-cta" onclick="switchTab('cheatsheet')">⚡ 直前暗記シート（5大比較表）を見る</button>
           <button class="hero-btn secondary-cta" onclick="switchTab('drill')">⚡ 4大障害スピードドリルに挑戦</button>
         </div>
       </div>
@@ -139,7 +139,7 @@
         <div class="stat-group">
           <div class="stat-item">
             <span class="stat-label">回答済み</span>
-            <span class="stat-value" id="statAnswered">0 / 70</span>
+            <span class="stat-value" id="statAnswered">0 / 96</span>
           </div>
           <div class="stat-item">
             <span class="stat-label">正答率</span>
@@ -168,16 +168,17 @@
 
       <!-- Filters -->
       <div class="quiz-filters">
-        <button class="filter-btn active" data-filter="all" onclick="setFilter('all', this)">すべて (全70問)</button>
+        <button class="filter-btn active" data-filter="all" onclick="setFilter('all', this)">すべて (全96問)</button>
         <button class="filter-btn" data-filter="mock" onclick="setFilter('mock', this)">本番フル模擬試験 (Q1〜Q45)</button>
         <button class="filter-btn" data-filter="practice" onclick="setFilter('practice', this)">分野別深掘り特訓 (D1〜D25)</button>
+        <button class="filter-btn" data-filter="review" onclick="setFilter('review', this)">📝 模試復習 (26問)</button>
         <button class="filter-btn" data-filter="starred" onclick="setFilter('starred', this)">要復習 ★</button>
         <button class="filter-btn" data-filter="incorrect" onclick="setFilter('incorrect', this)">誤答 ❌</button>
 
         <select id="domainSelect" class="filter-btn" onchange="onDomainSelect(this.value)" style="background: rgba(255,255,255,0.06); border-color: var(--border-subtle); color: var(--text-main); padding-right: 1.5rem;">
           <option value="all">すべての出題ドメイン</option>
           <option value="Domain 1">Domain 1: 基礎 & 障害分析 (Foundations)</option>
-          <option value="Domain 2">Domain 2: プロンプト & Genie (System Prompt)</option>
+          <option value="Domain 2">Domain 2: プロンプト & Genie・セマンティック (System Prompt & Semantic)</option>
           <option value="Domain 3">Domain 3: 知識検索 & ガバナンス (Knowledge Retrieval)</option>
           <option value="Domain 4">Domain 4: メモリ設計 (Memory Architecture)</option>
           <option value="Domain 5">Domain 5: ツール & MCP (Tool & Action Design)</option>
